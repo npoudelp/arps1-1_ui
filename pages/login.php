@@ -58,10 +58,7 @@ include_once("../partials/header.php");
                 }
             }).fail(function(response) {
                 // invaild username or password
-                $("#alert_diaplay").text("Invalid username or password");
-                $("#alert_diaplay").parent().show();
-                $("#username").val("");
-                $("#password").val("");
+                showError("Invalid username or password");
             });
         }
 
