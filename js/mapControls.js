@@ -102,7 +102,7 @@ clearMap = () => {
 };
 
 displayCoordinates = () => {
-  $("#coordinates").text(JSON.stringify(paths_to_draw));
+  $("#coordinates").val(JSON.stringify(paths_to_draw));
 };
 
 checkStatus = () => {
@@ -131,3 +131,7 @@ checkStatus = () => {
     console.error("Geolocation is not supported by this browser.");
   }
 };
+
+
+// data rendering starts from here
+
