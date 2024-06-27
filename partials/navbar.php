@@ -16,41 +16,39 @@ session_start();
     <div class="collapse navbar-collapse mx-5" id="navbarNav">
         <ul class="navbar-nav">
 
-            <li class="nav-item mx-3">
-                <a class="nav-link" href="#">Home</a>
-            </li>
             <?php
             if ($_SESSION['logged']) {
             ?>
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="/pages/dashboard.php">Dashboard</a>
+                </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link" href="/pages/filed_management.php">Manage Field</a>
-                </li><?php
-                    }
-                        ?>
-            <li class="nav-item mx-3">
-                <a class="nav-link" href="#">About</a>
-            </li>
-            <li class="nav-item mx-3">
-                <a class="nav-link" href="#">Services</a>
-            </li>
-            <li class="nav-item mx-3">
-                <a class="nav-link" href="#">Contact</a>
-            </li>
-            <?php
-            if ($_SESSION['logged']) {
-            ?>
+                </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-danger" onclick="userLogout()">Logout</a>
-                </li><?php
-                    } else {
-                        ?>
+                </li>
+            <?php
+            } else {
+            ?>
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="#">Services</a>
+                </li>
+                <li class="nav-item mx-3">
+                    <a class="nav-link" href="#">Contact</a>
+                </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-warning" href="/pages/login.php">Login</a>
                 </li>
             <?php
-                    }
+            }
             ?>
-
         </ul>
     </div>
 </nav>
@@ -63,18 +61,20 @@ session_start();
 
 <script>
     userLogout = () => {
-        sessionStorage.clear();
-        localStorage.clear();
-        $.ajax({
-            url: 'http://127.0.0.1/partials/destroy_session.php',
-            type: 'post',
-            data: {
-                'logged': false
-            },
-            success: function(response) {
-                window.location.href = "/";
-            }
-        });
+        if (window.confirm("Are you sure you want to logout?")) {
+            sessionStorage.clear();
+            localStorage.clear();
+            $.ajax({
+                url: 'http://127.0.0.1/partials/destroy_session.php',
+                type: 'post',
+                data: {
+                    'logged': false
+                },
+                success: function(response) {
+                    window.location.href = "/";
+                }
+            });
 
+        }
     }
 </script>
