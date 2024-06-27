@@ -29,14 +29,13 @@ include_once("../partials/header.php");
 
     <script>
         userLogin = () => {
-            const base_url = "http://127.0.0.1:8000/";
+            let base_url = "http://127.0.0.1:8000/";
             event.preventDefault();
             let username = $("#username").val();
             let password = $("#password").val();
 
             if (username == "" || password == "") {
-                $("#alert_diaplay").text("Please fill all fields");
-                $("#alert_diaplay").parent().show();
+                showError("Please fill all the fields");
                 return;
             }
 
@@ -47,13 +46,15 @@ include_once("../partials/header.php");
             $.ajax({
                 url: base_url + "api/token/",
                 type: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 data: JSON.stringify(data),
-                contentType: "application/json",
                 success: function(response, statusText, xhr) {
                     if (xhr.status == 200) {
                         localStorage.setItem("access_token", response.access);
                         localStorage.setItem("refresh_token", response.refresh);
-                        window.location.href = "http://127.0.0.1/pages/index.php";
+                        window.location.href = "/pages/index.php";
                     }
                 }
             }).fail(function(response) {
