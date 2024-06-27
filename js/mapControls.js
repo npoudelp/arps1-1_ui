@@ -38,6 +38,7 @@ async function initMap() {
     zoom: 18,
   });
 
+  // code to draw polygon
   drawingManager = new google.maps.drawing.DrawingManager({
     drawingControlOptions: {
       position: google.maps.ControlPosition.TOP_CENTER,
@@ -53,6 +54,7 @@ async function initMap() {
     },
   });
 
+  // get coordinates after drawing polygon
   google.maps.event.addListener(drawingManager, "overlaycomplete", (event) => {
     if (event.type === google.maps.drawing.OverlayType.POLYGON) {
       const polygon = event.overlay;
@@ -63,6 +65,7 @@ async function initMap() {
     }
   });
 
+  // show marker in current location
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
       const marker = new google.maps.Marker({
@@ -78,17 +81,14 @@ async function initMap() {
     console.log("Geolocation is not supported by this browser.");
   }
 
+  // create geofence area
+  const geofenceArea = new google.maps.Polygon({});
+
+  // check if current location is inside geofence area
   isInsideGeofence = (point) => {
-    console.log(point);
-    console.log(paths_to_draw);
+    console.log(geofenceArea);
     return google.maps.geometry.poly.containsLocation(point, geofenceArea);
   };
-
-  const marker = new google.maps.Marker({
-    position: current_map_location,
-    map: map,
-    title: "My Location",
-  });
 
   drawingManager.setMap(map);
 }
@@ -96,9 +96,9 @@ async function initMap() {
 initMap();
 
 clearMap = () => {
-  initMap();
   paths_to_draw = [];
   displayCoordinates();
+  initMap();
 };
 
 displayCoordinates = () => {
@@ -119,7 +119,7 @@ checkStatus = () => {
           position.coords.longitude
         );
         if (isInsideGeofence(pointToCheck)) {
-          alert("You are inside the geofence area");
+          showError("You are inside a field");
           // this part runs if user is in the geofence area
         }
       },
@@ -132,6 +132,4 @@ checkStatus = () => {
   }
 };
 
-
 // data rendering starts from here
-
