@@ -26,6 +26,9 @@ session_start();
                     <a class="nav-link" href="/pages/filed_management.php">Add Field(Older version)</a>
                 </li>
                 <li class="nav-item mx-3">
+                    <a class="nav-link" href="/pages/assistance.php">Get Assistance</a>
+                </li>
+                <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-danger" onclick="userLogout()">Logout</a>
                 </li>
             <?php
