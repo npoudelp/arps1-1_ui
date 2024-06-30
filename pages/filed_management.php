@@ -27,6 +27,10 @@ include_once("../partials/header.php");
                         <input type="text" maxlength="35" class="form-control" id="field_name" placeholder="Enter field name (required)">
                     </div>
                     <div class="form-group">
+                        <label for="crop_name">Crop Planted</label>
+                        <input type="text" maxlength="35" class="form-control" id="crop_name" placeholder="Enter crop name">
+                    </div>
+                    <div class="form-group">
                         <label for="nitrogen">Nitrogen Content</label>
                         <input type="number" step="0.001" class="form-control" id="nitrogen" placeholder="Enter nitrogen content">
                     </div>
@@ -70,6 +74,7 @@ include_once("../partials/header.php");
             let base_url = "http://127.0.0.1:8000/";
 
             let field_name = $("#field_name").val();
+            let crop_name = $("#crop_name").val();
             let field_nitrogen = $("#nitrogen").val();
             let field_potassium = $("#potassium").val();
             let field_phosphorus = $("#phosphorus").val();
@@ -86,6 +91,7 @@ include_once("../partials/header.php");
                 },
                 data: {
                     coordinates: field_coordinates,
+                    crop: crop_name,
                     name: field_name,
                     nitrogen: field_nitrogen,
                     potassium: field_potassium,
