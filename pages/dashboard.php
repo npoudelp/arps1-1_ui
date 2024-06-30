@@ -172,7 +172,7 @@ include_once("../partials/header.php");
             let id = $("#update").val();
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
-                url: base_url + 'field/get/id/' + id + '/',
+                url: base_url + 'api/field/get/id/' + id + '/',
                 type: 'GET',
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
