@@ -97,12 +97,13 @@ initMap();
 
 clearMap = () => {
   paths_to_draw = [];
-  displayCoordinates();
+  $("#coordinates").val(JSON.stringify(paths_to_draw));
   initMap();
 };
 
 displayCoordinates = () => {
-  $("#coordinates").val(JSON.stringify(paths_to_draw));
+  const flattenedPaths = paths_to_draw.flat();
+  $("#coordinates").val(JSON.stringify(flattenedPaths));
 };
 
 checkStatus = () => {
