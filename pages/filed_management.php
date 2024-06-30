@@ -94,11 +94,11 @@ include_once("../partials/header.php");
                 content_type: "application/json",
                 success: function(response) {
                     console.log(response);
-                    alert("Field added successfully");
+                    showError("Field added successfully");
                 },
                 error: function(err) {
                     console.log(err);
-                    alert("Error adding field");
+                    showError("Error adding field");
                 }
             })
         }
