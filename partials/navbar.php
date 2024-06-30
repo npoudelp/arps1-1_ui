@@ -23,7 +23,7 @@ session_start();
                     <a class="nav-link" href="/pages/dashboard.php">Dashboard</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="/pages/filed_management.php">Manage Field</a>
+                    <a class="nav-link" href="/pages/filed_management.php">Add Field(Older version)</a>
                 </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-danger" onclick="userLogout()">Logout</a>
