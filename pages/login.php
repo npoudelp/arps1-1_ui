@@ -59,6 +59,7 @@ include_once("../partials/header.php");
                 }
             }).fail(function(response) {
                 // invaild username or password
+                $("#password").val("");
                 showError("Invalid username or password");
             });
         }
