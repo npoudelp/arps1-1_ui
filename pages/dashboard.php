@@ -1,6 +1,6 @@
     <?php
+    $page_title = "arps | Dashboard";
     include_once("../partials/header.php");
-
     ?>
     <link rel="stylesheet" href="../css/loading.css">
 
@@ -91,7 +91,7 @@
                         </p>
                         <p>
                         <div class="row" id="buttonHolder">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <button class="btn btn-outline-dark" id="allowUpdate" onclick="allowUpdate()">
                                     Edit
                                 </button>
@@ -99,7 +99,10 @@
                                     Update
                                 </button>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-8">
+                                <button class="btn btn-outline-dark" id="viewDetails" onclick="sendToPredict()">
+                                    Recomend Crop
+                                </button>
                                 <button class="btn btn-outline-dark" id="viewDetails" onclick="viewDetails()">
                                     Get Details
                                 </button>
@@ -121,6 +124,11 @@
         </div>
 
         <script>
+            sendToPredict = () => {
+                let id = $("#update").val();
+                window.location.href = "./prediction.php?id=" + id;
+            }
+
             deleteField = () => {
                 let id = $("#update").val();
                 const base_url = "http://127.0.0.1:8000/";
@@ -132,7 +140,7 @@
                     },
                     success: function(response) {
                         showError("Field Deleted Successfully");
-                        
+                        window.location.reload();
                     }
                 });
             }
@@ -229,13 +237,6 @@
                 });
             }
 
-            $("#name, #crop, #nitrogen, #phosphorus, #potassium, #ph").keypress(function(event) {
-                if (event.which == 13) {
-                    event.preventDefault();
-                    updateField();
-                }
-            });
-
             hideNonEssentials();
             // otehr page js
             addField = () => {
@@ -277,15 +278,13 @@
                     }
                 })
             }
-
-            $("#field_name, #nitrogen, #potassium, #phosphorus, #ph").keypress(() => {
+            // other page js ends here
+            $("#name, #crop, #nitrogen, #phosphorus, #potassium, #ph").keypress(function(event) {
                 if (event.which == 13) {
                     event.preventDefault();
-                    addField();
+                    updateField();
                 }
-            })
-            // other page js ends here
-
+            });
             $("#field_name, #crop_name, #nitrogen_content, #potassium_content, #phosphorus_content, #ph_content").keypress(() => {
                 if (event.which == 13) {
                     event.preventDefault();
