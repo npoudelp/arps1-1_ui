@@ -81,8 +81,10 @@ include_once("../partials/header.php");
                     $("#loading").hide();
                     $("#assistContainer").show();
                     addQuestionAnswer(question, answer);
-                    $("#fqa").empty();
-                    getFqa();
+                    setTimeout(() => {
+                        $("#fqa").empty();
+                        getFqa();
+                    }, 5000);
                 },
                 error: function(error) {
                     showError("An error occured, please try again later");
@@ -106,7 +108,6 @@ include_once("../partials/header.php");
                     response.forEach((fqa) => {
                         qna[fqa.id] = fqa.answer;
                         $("#fqa").append(`<p onclick="getAnswer(${fqa.id})" class="lead border-bottom my-2">${fqa.question}</p>`);
-                        newLoad = true;
                         if (newLoad) {
                             let keys = Object.keys(qna);
                             let firstKey = keys[0];
@@ -129,6 +130,7 @@ include_once("../partials/header.php");
         getAnswer = (id) => {
             $("#answer").html(qna[id]);
         }
+        newLoad = true;
         getFqa();
     </script>
 
