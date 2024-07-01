@@ -28,6 +28,9 @@ session_start();
                 <li class="nav-item mx-3">
                     <a class="nav-link" href="/pages/assistance.php">Get Assistance</a>
                 </li>
+                <!-- <li class="nav-item mx-3">
+                    <a class="nav-link" href="/pages/prediction.php">Predict</a>
+                </li> -->
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-danger" onclick="userLogout()">Logout</a>
                 </li>
