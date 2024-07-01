@@ -3,6 +3,7 @@ let mapcanvas;
 let drawingManager;
 let paths_to_draw = [];
 let available_fields = [];
+let field_ids = [];
 
 getMyLocation = () => {
   if (navigator.geolocation) {
@@ -62,24 +63,23 @@ async function initMap() {
       const coordinates = polygon.getPath().getArray();
       paths_to_draw.push(coordinates);
       displayCoordinates();
-      geofenceArea.setPaths(paths_to_draw);
     }
   });
-
-  // create geofence area
-  const geofenceArea = new google.maps.Polygon({});
-
-  // check if current location is inside geofence area
-  isInsideGeofence = (point) => {
-    console.log(geofenceArea);
-    return google.maps.geometry.poly.containsLocation(point, geofenceArea);
-  };
 
   drawingManager.setMap(map);
 
   // other code ends here
 
-  plotMap = (coordinates, id, name, nitrogen, phosphorus, potassium, crop) => {
+  plotMap = (
+    coordinates,
+    id,
+    name,
+    nitrogen,
+    phosphorus,
+    potassium,
+    crop,
+    ph
+  ) => {
     paths_to_draw.push(coordinates);
 
     const values = coordinates.match(/{(.*?)}/g);
@@ -101,9 +101,7 @@ async function initMap() {
       fillOpacity: 0.35,
     });
 
-    coordinates_array.push(id, name, nitrogen, phosphorus, potassium, crop);
-    available_fields.push(coordinates_array);
-
+    coordinates_array.push(id, name, nitrogen, phosphorus, potassium, crop, ph);
     plot.setMap(map);
 
     //sets name for polygon
@@ -123,11 +121,32 @@ async function initMap() {
       $("#potassium").val(potassium);
       $("#crop").val(crop);
       $("#update").val(id);
-
-      console.log(name, event.latLng);
+      $("#ph").val(ph);
     });
 
     paths_to_draw = [];
+  };
+
+  // check if current location is inside geofence area
+  isInsideGeofence = (point) => {
+    const geofenceArea = new google.maps.Polygon({});
+    let latLng = new google.maps.LatLng(point.lat, point.lng);
+    let index = 0;
+    return available_fields.some((field) => {
+      const values = field.match(/{(.*?)}/g);
+      const coordinates_array = values.map((value) => {
+        return {
+          lat: parseFloat(value.match(/(\d+\.\d+)/g)[0]),
+          lng: parseFloat(value.match(/(\d+\.\d+)/g)[1]),
+        };
+      });
+      geofenceArea.setPath(coordinates_array);
+      if (google.maps.geometry.poly.containsLocation(latLng, geofenceArea)) {
+        viewLiveDetails(field_ids[index]);
+        return true;
+      }
+      index++;
+    });
   };
 
   // show marker in current location
@@ -160,6 +179,29 @@ displayCoordinates = () => {
   $("#coordinates_value").val(JSON.stringify(flattenedPaths));
 };
 
+viewLiveDetails = (id) => {
+  const base_url = "http://127.0.0.1:8000/";
+  $.ajax({
+    url: base_url + "api/field/get/id/" + id + "/",
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("access_token"),
+    },
+    success: function (response) {
+      $("#update").hide();
+      $("#fieldAddForm").hide();
+      $("#name").val(response.name);
+      $("#crop").val(response.crop);
+      $("#nitrogen").val(response.nitrogen);
+      $("#phosphorus").val(response.phosphorus);
+      $("#potassium").val(response.potassium);
+      $("#ph").val(response.ph);
+      $("#loading").hide();
+      $("#field_display").show();
+    },
+  });
+};
+
 checkStatus = () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -169,13 +211,11 @@ checkStatus = () => {
           lng: position.coords.longitude,
         };
         map.setCenter(userLocation);
-        const pointToCheck = new google.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-        if (isInsideGeofence(pointToCheck)) {
-          showError("You are inside a field");
+        if (isInsideGeofence(userLocation)) {
           // this part runs if user is in the geofence area
+          console.log("first");
+        } else {
+          console.log("last");
         }
       },
       (error) => {
@@ -202,6 +242,8 @@ getAllFields = () => {
     },
     success: function (response, status, xhr) {
       response.forEach((field) => {
+        available_fields.push(field.coordinates);
+        field_ids.push(field.id);
         plotMap(
           field.coordinates,
           field.id,
@@ -209,7 +251,8 @@ getAllFields = () => {
           field.nitrogen,
           field.phosphorus,
           field.potassium,
-          field.crop
+          field.crop,
+          field.ph
         );
       });
     },
@@ -222,5 +265,29 @@ getAllFields = () => {
 $(document).ready(function () {
   initMap();
   getAllFields();
-  console.log(available_fields);
 });
+
+// track field on move
+let trackEnabled = false;
+let intervalId = null; // Store the ID value returned by setInterval
+
+trackField = () => {
+  if (!trackEnabled) {
+    $("#loading").show();
+    $("#buttonHolder").hide();
+    $("#fieldTrackingButton").text("Stop Live Tracking");
+    $("#fieldTrackingButton").addClass("btn-danger").removeClass("text-light");
+    checkStatus();
+    intervalId = setInterval(() => {
+      checkStatus();
+    }, 5000);
+    trackEnabled = true;
+  } else {
+    clearInterval(intervalId);
+    $("#loading").hide();
+    $("#buttonHolder").show();
+    $("#fieldTrackingButton").text("Enable Live Field Tracking");
+    $("#fieldTrackingButton").addClass("text-light").removeClass("btn-danger");
+    trackEnabled = false;
+  }
+};
