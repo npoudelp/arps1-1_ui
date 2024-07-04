@@ -4,6 +4,7 @@ let drawingManager;
 let paths_to_draw = [];
 let available_fields = [];
 let field_ids = [];
+let lastPolygon = null;
 
 getMyLocation = () => {
   if (navigator.geolocation) {
@@ -56,6 +57,22 @@ async function initMap() {
     },
   });
 
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      // Cancel the drawing
+      if (drawingManager) {
+        drawingManager.setDrawingMode(null);
+        paths_to_draw = [];
+      }
+      // Remove the last drawn polygon from the map
+      if (lastPolygon) {
+        lastPolygon.setMap(null);
+        lastPolygon = null;
+        $("#coordinates_value").val("");
+      }
+    }
+  });
+
   // get coordinates after drawing polygon
   google.maps.event.addListener(drawingManager, "overlaycomplete", (event) => {
     if (event.type === google.maps.drawing.OverlayType.POLYGON) {
@@ -63,6 +80,8 @@ async function initMap() {
       const coordinates = polygon.getPath().getArray();
       paths_to_draw.push(coordinates);
       displayCoordinates();
+
+      lastPolygon = polygon;
     }
   });
 
@@ -143,6 +162,7 @@ async function initMap() {
       geofenceArea.setPath(coordinates_array);
       if (google.maps.geometry.poly.containsLocation(latLng, geofenceArea)) {
         viewLiveDetails(field_ids[index]);
+        console.log(field_ids[index]);
         return true;
       }
       index++;
@@ -180,6 +200,7 @@ displayCoordinates = () => {
 };
 
 viewLiveDetails = (id) => {
+  let farm_name = "";
   const base_url = "http://127.0.0.1:8000/";
   $.ajax({
     url: base_url + "api/field/get/id/" + id + "/",
@@ -191,6 +212,7 @@ viewLiveDetails = (id) => {
       $("#update").hide();
       $("#fieldAddForm").hide();
       $("#name").val(response.name);
+      farm_name = response.name;
       $("#crop").val(response.crop);
       $("#nitrogen").val(response.nitrogen);
       $("#phosphorus").val(response.phosphorus);
@@ -198,6 +220,99 @@ viewLiveDetails = (id) => {
       $("#ph").val(response.ph);
       $("#loading").hide();
       $("#field_display").show();
+    },
+  });
+
+  $.ajax({
+    url: base_url + "api/field-activities/all/" + id + "/",
+    type: "GET",
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("access_token"),
+    },
+    success: function (response) {
+      $("#history_title").empty();
+      $("#history_title").text("History of farm, " + farm_name);
+      if (response["plantation"]) {
+        let plantation = response["plantation"];
+        let html =
+          "<table class='table table-striped'><tr><th>Plantation Date</th><th>Crop</th></tr>";
+        plantation.forEach((item) => {
+          let dt = item.date.replace("T", ", ");
+          dt = dt.split(".")[0];
+          html +=
+            "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr></table>";
+        });
+        $("#plantation").html(html);
+      }
+      if (response["fertilizer"]) {
+        let fertilizer = response["fertilizer"];
+        let html =
+          "<table class='table table-striped'><tr><th>Fertilizer Date</th><th>Name</th><th>Quantity</th></tr>";
+        fertilizer.forEach((item) => {
+          let dt = item.date.replace("T", ", ");
+          dt = dt.split(".")[0];
+          html +=
+            "<tr><td>" +
+            dt +
+            "</td><td>" +
+            item.name +
+            "</td><td>" +
+            item.quantity +
+            "</td></tr></table>";
+        });
+        $("#fertilizer").html(html);
+      }
+      if (response["irrigation"]) {
+        let irrigation = response["irrigation"];
+        let html =
+          "<table class='table table-striped'><tr><th>Irrigation Date</th><th>Type</th></tr>";
+        irrigation.forEach((item) => {
+          let dt = item.date.replace("T", ", ");
+          dt = dt.split(".")[0];
+          html +=
+            "<tr><td>" + dt + "</td><td>" + item.type + "</td></tr></table>";
+        });
+        $("#irrigation").html(html);
+      }
+      if (response["pestcontrol"]) {
+        let items = response["pestcontrol"];
+        let html =
+          "<table class='table table-striped'><tr><th>Pesticide Date</th><th>Name</th></th><th>Quantity</th></tr>";
+        items.forEach((item) => {
+          let dt = item.date.replace("T", ", ");
+          dt = dt.split(".")[0];
+          html +=
+            "<tr><td>" +
+            dt +
+            "</td><td>" +
+            item.name +
+            "</td><td>" +
+            item.quantity +
+            "</td></tr></table>";
+        });
+        $("#pestcontrol").html(html);
+      }
+      if (response["harvestcrop"]) {
+        let harvest = response["harvestcrop"];
+        let html =
+          "<table class='table table-striped'><tr><th>Harvest Date</th><th>Crop</th><th>Quantity</th></tr>";
+        harvest.forEach((item) => {
+          let dt = item.date.replace("T", ", ");
+          dt = dt.split(".")[0];
+          html +=
+            "<tr><td>" +
+            dt +
+            "</td><td>" +
+            item.crop +
+            "</td><td>" +
+            item.quantity +
+            "</td></tr></table>";
+        });
+        $("#harvest").html(html);
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.log("Error:", textStatus, errorThrown);
     },
   });
 };
@@ -213,7 +328,7 @@ checkStatus = () => {
         map.setCenter(userLocation);
         if (isInsideGeofence(userLocation)) {
           // this part runs if user is in the geofence area
-          console.log("first");
+          console.log("inside");
         } else {
           console.log("last");
         }

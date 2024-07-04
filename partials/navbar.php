@@ -2,7 +2,7 @@
 session_start();
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand mx-5 text-warning" href="<?php if ($_SESSION['logged']) { ?>
+    <a class="navbar-brand mx-5 text-success" href="<?php if ($_SESSION['logged']) { ?>
                                             /pages/index.php
                                         <?php
                                                     } else {
@@ -22,9 +22,9 @@ session_start();
                 <li class="nav-item mx-3">
                     <a class="nav-link" href="/pages/dashboard.php">Dashboard</a>
                 </li>
-                <li class="nav-item mx-3">
+                <!-- <li class="nav-item mx-3">
                     <a class="nav-link" href="/pages/filed_management.php">Add Field(Older version)</a>
-                </li>
+                </li> -->
                 <li class="nav-item mx-3">
                     <a class="nav-link" href="/pages/assistance.php">Get Assistance</a>
                 </li>
@@ -50,7 +50,7 @@ session_start();
                     <a class="nav-link" href="#">Contact</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link btn btn-outline-warning" href="/pages/login.php">Login</a>
+                    <a class="nav-link btn btn-outline-success" href="/pages/login.php">Login</a>
                 </li>
             <?php
             }

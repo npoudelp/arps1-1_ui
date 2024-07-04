@@ -44,7 +44,7 @@ include_once("../partials/header.php");
                     </div>
                     <div class="row">
                         <div class="col-6">
-                            <button type="submit" onclick="addField()" class="btn btn-outline-warning">
+                            <button type="submit" onclick="addField()" class="btn btn-outline-success">
                                 Add Field
                             </button>
                         </div>

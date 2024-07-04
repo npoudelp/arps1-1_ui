@@ -10,8 +10,8 @@
         ?>
 
 
-        <div class="container-fluid">
-            <div class="row mt-1">
+        <div class="container-fluid my-5">
+            <div class="row">
                 <div class="col-md-8">
                     <div class="container-fluid" style="height: 70vh" id="mapDashboard"></div>
                 </div>
@@ -26,18 +26,18 @@
                         </div>
                         <div class="form-group">
                             <label for="crop_name">Crop Planted</label>
-                            <input type="text" maxlength="35" class="form-control" id="crop_name" placeholder="Enter crop name">
+                            <input type="text" maxlength="35" class="form-control" id="crop_name" placeholder="You can add palt from recomend section too">
                         </div>
                         <div class="form-group">
-                            <label for="nitrogen">Nitrogen Content</label>
+                            <label for="nitrogen">Nitrogen Content (KG/HA)</label>
                             <input type="number" step="0.001" class="form-control" id="nitrogen_content" placeholder="Enter nitrogen content">
                         </div>
                         <div class="form-group">
-                            <label for="potassium">Potassium Content</label>
+                            <label for="potassium">Potassium Content (KG/HA)</label>
                             <input type="number" step="0.001" class="form-control" id="potassium_content" placeholder="Enter potassium content">
                         </div>
                         <div class="form-group">
-                            <label for="phosphorus">Phosphorus Content</label>
+                            <label for="phosphorus">Phosphorus Content (KG/HA)</label>
                             <input type="number" step="0.001" class="form-control" id="phosphorus_content" placeholder="Enter phosphorus content">
                         </div>
                         <div class="form-group">
@@ -46,14 +46,11 @@
                         </div>
                         <div class="row">
                             <div class="col-6">
-                                <button type="submit" onclick="addField()" class="btn btn-outline-warning">
+                                <button type="submit" onclick="addField()" class="btn btn-outline-success">
                                     Add Field
                                 </button>
                             </div>
                             <div class="col-6">
-                                <button class="btn btn-outline-danger" onclick="clearMap()">
-                                    Reset Map
-                                </button>
                                 <button class="btn btn-outline-dark" onclick="checkStatus()">
                                     Check Status
                                 </button>
@@ -74,15 +71,15 @@
                             <input class="form-control" type="text" id="crop"></input>
                         </p>
                         <p>
-                            <span class="font-weight-bold">Nitrogen Content:</span>
+                            <span class="font-weight-bold">Nitrogen Content (KG/HA):</span>
                             <input class="form-control" type="text" id="nitrogen"></input>
                         </p>
                         <p>
-                            <span class="font-weight-bold">Phosphorus Content:</span>
+                            <span class="font-weight-bold">Phosphorus Content (KG/HA):</span>
                             <input class="form-control" type="text" id="phosphorus"></input>
                         </p>
                         <p>
-                            <span class="font-weight-bold">Potassium Content:</span>
+                            <span class="font-weight-bold">Potassium Content (KG/HA):</span>
                             <input class="form-control" type="text" id="potassium"></input>
                         </p>
                         <p>
@@ -92,22 +89,22 @@
                         <p>
                         <div class="row" id="buttonHolder">
                             <div class="col-md-4">
-                                <button class="btn btn-outline-dark" id="allowUpdate" onclick="allowUpdate()">
+                                <button class="btn btn-outline-success" id="allowUpdate" onclick="allowUpdate()">
                                     Edit
                                 </button>
-                                <button class="btn btn-outline-warning" id="update" onclick="updateField()">
+                                <button class="btn btn-outline-success" id="update" onclick="updateField()">
                                     Update
                                 </button>
                             </div>
                             <div class="col-md-8">
-                                <button class="btn btn-outline-dark" id="viewDetails" onclick="sendToPredict()">
+                                <button class="btn btn-outline-dark" id="viewDetails" onclick="addActivities()">
+                                    Field Activities
+                                </button>
+                                <button class="btn btn-outline-success" id="viewDetails" onclick="sendToPredict()">
                                     Recomend Crop
                                 </button>
-                                <button class="btn btn-outline-dark" id="viewDetails" onclick="viewDetails()">
-                                    Get Details
-                                </button>
                                 <button class="btn btn-outline-danger" id="deleteField" onclick="deleteField()">
-                                    Delete
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </div>
                         </div>
@@ -123,13 +120,34 @@
             </p>
         </div>
 
+        <div class="container-fluid py-2" id="field_activities">
+            <p class="text-center lead font-weight-bold" id="history_title"></p>
+            <div class="row">
+                <div class="col-md-4" id="plantation"></div>
+                <div class="col-md-4" id="irrigation"></div>
+                <div class="col-md-4" id="pestcontrol"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" id="fertilizer"></div>
+                <div class="col-md-6" id="harvest"></div>
+            </div>
+        </div>
+
         <script>
+            addActivities = () => {
+                let id = $("#update").val();
+                window.location.href = "./activities.php?id=" + id + "&crop=" + $("#crop").val();
+            }
+
             sendToPredict = () => {
                 let id = $("#update").val();
                 window.location.href = "./prediction.php?id=" + id;
             }
 
             deleteField = () => {
+                if (!confirm("Are you sure you want to delete this field?")) {
+                    return;
+                }
                 let id = $("#update").val();
                 const base_url = "http://127.0.0.1:8000/";
                 $.ajax({
@@ -141,6 +159,14 @@
                     success: function(response) {
                         showError("Field Deleted Successfully");
                         window.location.reload();
+                    },
+                    error: function(response, textStatus, errorThrown) {
+                        if (response.status == 400) {
+                            showError(response.responseJSON.error);
+                        } else {
+                            showError("An error occured");
+
+                        }
                     }
                 });
             }
@@ -180,6 +206,9 @@
                 if (ph == "") {
                     ph = 0;
                 }
+                if(crop == ""){
+                    crop = "";
+                }
                 if (name == "" || coordinates == "") {
                     showError("Please fill all the fields");
                     return;
@@ -210,6 +239,14 @@
                         $("#name, #crop, #nitrogen, #phosphorus, #potassium, #ph").prop('readonly', true).css('border', 'none');
                         $("#allowUpdate").show();
                         showError("Field Updated Successfully");
+                    },
+                    error: function(response, textStatus, errorThrown) {
+                        if (response.status == 400) {
+                            showError(response.responseJSON.error);
+                        } else {
+                            showError("An error occured");
+
+                        }
                     }
                 });
             }
@@ -293,12 +330,6 @@
             })
         </script>
         <script src="../js/tokenManager.js"></script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdZfRDtgrw9k6rtBu5di_Da8aUeRmFtbM&map_ids=1ad12e178890838&callback=initMap&libraries=drawing"></script>
+        <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdZfRDtgrw9k6rtBu5di_Da8aUeRmFtbM&map_ids=1ad12e178890838&callback=initMap&libraries=drawing"></script>
         <script src="../js/mapForDashboard.js"></script>
-
-        <script>
-
-
-
-        </script>
     </body>

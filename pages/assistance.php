@@ -1,5 +1,9 @@
 <?php
 $page_title = "arps | Assisance";
+if ($_REQUEST['crop']) {
+    $crop = $_REQUEST['crop'];
+    $question = "Details on planting, growing and harvesting $crop";
+}
 include_once("../partials/header.php");
 ?>
 <link rel="stylesheet" href="../css/loading.css">
@@ -9,7 +13,7 @@ include_once("../partials/header.php");
     include_once("../partials/navbar.php");
     ?>
     <div id="loading"></div>
-    <div class="container-fluid" id="assistContainer">
+    <div class="container-fluid my-5" id="assistContainer">
         <div class="row py-2">
             <div class="col-md-7 border-right">
                 <p class="lead" id="answer"></p>
@@ -18,7 +22,7 @@ include_once("../partials/header.php");
                 <div class="input-group">
                     <input type="text" class="form-control" id="question" placeholder="Enter your question here" autofocus>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-warning" onclick="getAssiatance()" type="button" id="askButton">
+                        <button class="btn btn-outline-success" onclick="getAssiatance()" type="button" id="askButton">
                             <i class="bi bi-send"></i>
                         </button>
                     </div>
@@ -57,12 +61,21 @@ include_once("../partials/header.php");
             });
         }
 
+        let autoQuestion;
+
         getAssiatance = () => {
-            $("#askButton").attr("disabled", true);
+            let question;
+            if ($("#question").val()) {
+                question = $("#question").val();
+            } else if (autoQuestion) {
+                question = autoQuestion;
+            } else {
+                showError("Please enter a question");
+                return;
+            }
             $("#assistContainer").hide();
             $("#loading").css("top", "50%").css("left", "50%").css("position", "fixed").show();
 
-            let question = $("#question").val();
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
                 url: base_url + "api/assistance/",
@@ -76,15 +89,17 @@ include_once("../partials/header.php");
                 contentType: "application/json",
                 success: function(response) {
                     let answer = response.response;
-                    answer = answer.replace(/\*\*/g, "<br>").replace(/:\*\*/g, ":\t").replace(/\*/g, "");
+                    answer = answer.replace(/\*\*(.*?)\*\*/g, "<br><span class='font-weight-bold'>$1</span>").replace(/\*/g, "<br>");
                     $("#answer").html(answer);
                     $("#loading").hide();
                     $("#assistContainer").show();
-                    addQuestionAnswer(question, answer);
-                    setTimeout(() => {
-                        $("#fqa").empty();
-                        getFqa();
-                    }, 5000);
+                    if (response.newquestion) {
+                        addQuestionAnswer(question, answer);
+                        setTimeout(() => {
+                            $("#fqa").empty();
+                            getFqa();
+                        }, 5000);
+                    }
                 },
                 error: function(error) {
                     showError("An error occured, please try again later");
@@ -107,7 +122,7 @@ include_once("../partials/header.php");
                 success: function(response) {
                     response.forEach((fqa) => {
                         qna[fqa.id] = fqa.answer;
-                        $("#fqa").append(`<p onclick="getAnswer(${fqa.id})" class="lead border-bottom my-2">${fqa.question}</p>`);
+                        $("#fqa").append(`<p onclick="getAnswer(${fqa.id})" id="${fqa.id}" class="lead border-bottom my-2">${fqa.question}</p>`);
                         if (newLoad) {
                             let keys = Object.keys(qna);
                             let firstKey = keys[0];
@@ -129,8 +144,18 @@ include_once("../partials/header.php");
 
         getAnswer = (id) => {
             $("#answer").html(qna[id]);
+            $("#fqa p").removeClass("border-success text-success");
+            $("#" + id + "").addClass("border-success text-success");
         }
         newLoad = true;
+        <?php
+        if ($_REQUEST['crop']) {
+        ?>
+            autoQuestion = "<?php echo $question; ?>";
+            getAssiatance();
+        <?php
+        }
+        ?>
         getFqa();
     </script>
 

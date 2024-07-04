@@ -1,5 +1,10 @@
 <?php
 $page_title = "arps | Predictions";
+
+if (!isset($_REQUEST['id'])) {
+    header('Location: /pages/dashboard.php');
+}
+
 include_once("../partials/header.php");
 $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', 'Bardiya', 'Bhaktapur', 'Chitawan', 'Dadeldhura', 'Dailekh', 'Dang', 'Darchula', 'Dhading', 'Dhankuta', 'Dhanusa', 'Dolkha', 'Dolpa', 'Doti', 'Gorkha', 'Gulmi', 'Humla', 'Ilam', 'Jhapa', 'Jumla', 'Kabhre', 'Kailali', 'Kanchanpur', 'Kaski', 'Kathmandu', 'Lalitpur', 'Lamjung', 'Mahottari', 'Makwanpur', 'Manang', 'Morang', 'Mugu', 'Mustang', 'Myagdi', 'Nawalparasi', 'Nuwakot', 'Okhaldhunga', 'Palpa', 'Panchther', 'Parbat', 'Rasuwa', 'Routahat', 'Rukum', 'Rupandehi', 'Salyan', 'Sankhuwasabha', 'Saptari', 'Sarlahi', 'Sindhuli', 'Solukhumbu', 'Sunsari', 'Surkhet', 'Syangja', 'Tanahun', 'Taplejung', 'Terhathum', 'Udayapur'];
 
@@ -10,9 +15,9 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
     include_once("../partials/navbar.php");
     ?>
 
-    <div class="container-fluid my-2">
+    <div class="container-fluid my-5">
         <div class="row">
-            <div class="col-md-7">
+            <div class="col-md-7" id="crops">
 
             </div>
             <div class="col-md-5">
@@ -28,7 +33,7 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
                         </select>
                     </div>
                     <div class="col-4">
-                        <span class="btn btn-warning" onclick="predictCrop()">Recomend</span>
+                        <span class="btn btn-success" onclick="predictCrop()">Recomend</span>
                     </div>
                 </div>
             </div>
@@ -46,7 +51,7 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
             });
         });
 
-        function predictCrop() {
+        predictCrop = () => {
             let district = $('#district').val();
             let id = <?php echo $_REQUEST['id']; ?>;
             if (district == 'null') {
@@ -65,20 +70,70 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
                 success: function(response, status, xhr) {
-                    console.log(response);
                     if (xhr.status == 200) {
-                        showError(response.crops);
+                        $("#crops").empty();
+                        $("#crops").append("<h3 class='lead font-weight-bold'>Most suitabel to least suitable crops from the top</h3>");
+                        response.crops.forEach((crop, i) => {
+                            i = i + 1;
+                            $("#crops").append(" <p class='lead'>" +
+                                "<div class='row'>" +
+                                "<div class='col-6'>" +
+                                "<p class='lead' id='cropName'>" + i + ": " + crop + "</p>" +
+                                "</div>" +
+                                "<div class='col-6'>" +
+                                "<span id='aboutCrop' class='btn btn-dark' onclick=aboutCrop('" + crop + "')>" +
+                                "About Crop" +
+                                "</span> " +
+                                " <span id='addCrop' class='btn btn-outline-success' onclick=addToFarm('" + crop + "')>" +
+                                "Add To Farm" +
+                                "</span>" +
+                                "</div>" +
+                                "</div>" +
+                                "</p>");
+                        });
+
                     } else {
-                        alert(response.error);
+                        showError('Error occured, try again later');
                     }
                 },
                 error: function(err) {
                     console.log(err);
-                    showError('Something went wrong');
+                    showError('Farm data not availabale, update farm data first');
                 }
             });
 
         }
+
+        addToFarm = (crop) => {
+            let id = <?php echo $_REQUEST['id']; ?>;
+            const base_url = 'http://127.0.0.1:8000/';
+            let data = {
+                crop: crop
+            };
+            $.ajax({
+                url: base_url + 'api/field/update/' + id + '/',
+                type: 'PUT',
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('access_token')
+                },
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    showError(crop + " crop added to field");
+                }
+            });
+        }
+
+        aboutCrop = (crop) => {
+            window.location.href = './assistance.php?crop=' + crop;
+        }
+
+        $("#prediction").keypress(function(event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                predictCrop();
+            }
+        });
     </script>
 
 </body>
