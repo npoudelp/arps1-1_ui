@@ -1,0 +1,33 @@
+/* font for logo */
+@import url("https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Pacifico&display=swap");
+
+/* .pacifico-regular {
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+  }
+   */
+
+.logo_arps {
+  font-family: "Changa One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2rem;
+  color: #fff;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  margin-left: 3rem;
+  padding: 0;
+  text-align: center;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: color 0.5s ease;
+}
+
+.logo_arps:hover {
+  color: #198754;
+  text-decoration: none;
+}
+

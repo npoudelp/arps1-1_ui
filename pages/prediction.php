@@ -40,6 +40,10 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
         </div>
     </div>
 
+    <?php
+    include_once(".//partials/footer.php");
+    ?>
+    
     <script src="../js/tokenManager.js"></script>
     <script>
         $(document).ready(function() {

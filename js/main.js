@@ -1,4 +1,6 @@
 showError = (message) => {
-  $("#alert_diaplay").text(message);
-  $("#alert_diaplay").parent().show();
+  let alertDisplay = $("#alert_diaplay");
+  alertDisplay.text(message);
+  alertDisplay.parent().prependTo('body');
+  alertDisplay.parent().show();
 };

@@ -112,7 +112,9 @@ $crop = $_REQUEST['crop'];
             </div>
         </div>
     </div>
-
+    <?php
+    include_once("../partials/footer.php");
+    ?>
 
 
     <script>
@@ -452,7 +454,6 @@ $crop = $_REQUEST['crop'];
         }
 
 
-
         $(document).ready(() => {
             viewDetails();
             getPlantationHistory();
@@ -529,6 +530,7 @@ $crop = $_REQUEST['crop'];
         });
 
         viewDetails = () => {
+            let isPlant = false;
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
@@ -544,6 +546,14 @@ $crop = $_REQUEST['crop'];
                     $("#phosphorus").text(response.phosphorus + " KG/HA");
                     $("#potassium").text(response.potassium + " KG/HA");
                     $("#ph").text(response.ph);
+                    if (response.crop != "") {
+                        isPlant = true;
+                    }
+                    if (!isPlant) {
+                        $("#plantation").text("No crop added to plant");
+                        $("#plantation").addClass("btn btn-danger");
+                        $("#plantation").attr("onclick", "showError('Please add a crop to field details to plant it')");
+                    }
                 }
             });
         }

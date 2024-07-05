@@ -6,4 +6,9 @@ include_once("./partials/header.php");
     <?php
     include_once("./partials/navbar.php");
     ?>
-</body> 
+<div class="p-5"></div>
+    
+    <?php
+    include_once("./partials/footer.php");
+    ?>
+</body>

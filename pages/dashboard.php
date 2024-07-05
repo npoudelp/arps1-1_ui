@@ -132,7 +132,9 @@
                 <div class="col-md-6" id="harvest"></div>
             </div>
         </div>
-
+        <?php
+        include_once("../partials/footer.php");
+        ?>
         <script>
             addActivities = () => {
                 let id = $("#update").val();
@@ -206,7 +208,7 @@
                 if (ph == "") {
                     ph = 0;
                 }
-                if(crop == ""){
+                if (crop == "") {
                     crop = "";
                 }
                 if (name == "" || coordinates == "") {

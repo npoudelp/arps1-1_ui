@@ -2,7 +2,7 @@
 session_start();
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand mx-5 text-success" href="<?php if ($_SESSION['logged']) { ?>
+    <a class="logo_arps" href="<?php if ($_SESSION['logged']) { ?>
                                             /pages/index.php
                                         <?php
                                                     } else {

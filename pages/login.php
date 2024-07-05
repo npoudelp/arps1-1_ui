@@ -15,10 +15,11 @@ include_once("../partials/header.php");
                     <input require type="text" autofocus class="form-control" id="username" placeholder="Enter username">
                 </div>
                 <div class="form-group">
+                    <label for="password">Password</label>
                     <div class="input-group mb-3">
                         <input type="password" id="password" class="form-control" placeholder="Enter password">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-success" id="showPassword"><i  class="bi bi-eye-slash-fill"></i></span>
+                            <span class="input-group-text bg-success" id="showPassword"><i class="bi bi-eye-slash-fill"></i></span>
                         </div>
                     </div>
                 </div>
@@ -30,7 +31,9 @@ include_once("../partials/header.php");
             </div>
         </div>
     </div>
-
+    <?php
+    include_once("../partials/footer.php");
+    ?>
     <script>
         let mouseDown = false;
         $("#showPassword").mousedown(function() {

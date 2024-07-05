@@ -184,225 +184,228 @@ async function initMap() {
   } else {
     console.log("Geolocation is not supported by this browser.");
   }
-}
 
-clearMap = () => {
-  paths_to_draw = [];
-  $("#coordinates_value").val(JSON.stringify(paths_to_draw));
-  initMap();
-};
+  clearMap = () => {
+    paths_to_draw = [];
+    $("#coordinates_value").val(JSON.stringify(paths_to_draw));
+    initMap();
+  };
 
-displayCoordinates = () => {
-  $("#field_display").hide();
-  $("#fieldAddForm").show();
-  const flattenedPaths = paths_to_draw.flat();
-  $("#coordinates_value").val(JSON.stringify(flattenedPaths));
-};
+  displayCoordinates = () => {
+    $("#field_display").hide();
+    $("#fieldAddForm").show();
+    const flattenedPaths = paths_to_draw.flat();
+    $("#coordinates_value").val(JSON.stringify(flattenedPaths));
+  };
 
-viewLiveDetails = (id) => {
-  let farm_name = "";
-  const base_url = "http://127.0.0.1:8000/";
-  $.ajax({
-    url: base_url + "api/field/get/id/" + id + "/",
-    type: "GET",
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("access_token"),
-    },
-    success: function (response) {
-      $("#update").hide();
-      $("#fieldAddForm").hide();
-      $("#name").val(response.name);
-      farm_name = response.name;
-      $("#crop").val(response.crop);
-      $("#nitrogen").val(response.nitrogen);
-      $("#phosphorus").val(response.phosphorus);
-      $("#potassium").val(response.potassium);
-      $("#ph").val(response.ph);
-      $("#loading").hide();
-      $("#field_display").show();
-    },
-  });
+  getAllFields = () => {
+    const base_url = "http://127.0.0.1:8000/";
+    $.ajax({
+      url: base_url + "api/field/get/",
+      type: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      success: function (response, status, xhr) {
+        response.forEach((field) => {
+          available_fields.push(field.coordinates);
+          field_ids.push(field.id);
+          plotMap(
+            field.coordinates,
+            field.id,
+            field.name,
+            field.nitrogen,
+            field.phosphorus,
+            field.potassium,
+            field.crop,
+            field.ph
+          );
+        });
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  };
 
-  $.ajax({
-    url: base_url + "api/field-activities/all/" + id + "/",
-    type: "GET",
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("access_token"),
-    },
-    success: function (response) {
-      $("#history_title").empty();
-      $("#history_title").text("History of farm, " + farm_name);
-      if (response["plantation"]) {
-        let plantation = response["plantation"];
-        let html =
-          "<table class='table table-striped'><tr><th>Plantation Date</th><th>Crop</th></tr>";
-        plantation.forEach((item) => {
-          let dt = item.date.replace("T", ", ");
-          dt = dt.split(".")[0];
-          html +=
-            "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr></table>";
-        });
-        $("#plantation").html(html);
-      }
-      if (response["fertilizer"]) {
-        let fertilizer = response["fertilizer"];
-        let html =
-          "<table class='table table-striped'><tr><th>Fertilizer Date</th><th>Name</th><th>Quantity</th></tr>";
-        fertilizer.forEach((item) => {
-          let dt = item.date.replace("T", ", ");
-          dt = dt.split(".")[0];
-          html +=
-            "<tr><td>" +
-            dt +
-            "</td><td>" +
-            item.name +
-            "</td><td>" +
-            item.quantity +
-            "</td></tr></table>";
-        });
-        $("#fertilizer").html(html);
-      }
-      if (response["irrigation"]) {
-        let irrigation = response["irrigation"];
-        let html =
-          "<table class='table table-striped'><tr><th>Irrigation Date</th><th>Type</th></tr>";
-        irrigation.forEach((item) => {
-          let dt = item.date.replace("T", ", ");
-          dt = dt.split(".")[0];
-          html +=
-            "<tr><td>" + dt + "</td><td>" + item.type + "</td></tr></table>";
-        });
-        $("#irrigation").html(html);
-      }
-      if (response["pestcontrol"]) {
-        let items = response["pestcontrol"];
-        let html =
-          "<table class='table table-striped'><tr><th>Pesticide Date</th><th>Name</th></th><th>Quantity</th></tr>";
-        items.forEach((item) => {
-          let dt = item.date.replace("T", ", ");
-          dt = dt.split(".")[0];
-          html +=
-            "<tr><td>" +
-            dt +
-            "</td><td>" +
-            item.name +
-            "</td><td>" +
-            item.quantity +
-            "</td></tr></table>";
-        });
-        $("#pestcontrol").html(html);
-      }
-      if (response["harvestcrop"]) {
-        let harvest = response["harvestcrop"];
-        let html =
-          "<table class='table table-striped'><tr><th>Harvest Date</th><th>Crop</th><th>Quantity</th></tr>";
-        harvest.forEach((item) => {
-          let dt = item.date.replace("T", ", ");
-          dt = dt.split(".")[0];
-          html +=
-            "<tr><td>" +
-            dt +
-            "</td><td>" +
-            item.crop +
-            "</td><td>" +
-            item.quantity +
-            "</td></tr></table>";
-        });
-        $("#harvest").html(html);
-      }
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      console.log("Error:", textStatus, errorThrown);
-    },
-  });
-};
+  viewLiveDetails = (id) => {
+    let farm_name = "";
+    const base_url = "http://127.0.0.1:8000/";
+    $.ajax({
+      url: base_url + "api/field/get/id/" + id + "/",
+      type: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      success: function (response) {
+        $("#update").hide();
+        $("#fieldAddForm").hide();
+        $("#name").val(response.name);
+        farm_name = response.name;
+        $("#update").val(response.id);
+        $("#crop").val(response.crop);
+        $("#nitrogen").val(response.nitrogen);
+        $("#phosphorus").val(response.phosphorus);
+        $("#potassium").val(response.potassium);
+        $("#ph").val(response.ph);
+        $("#loading").hide();
+        $("#field_display").show();
+      },
+    });
 
-checkStatus = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        map.setCenter(userLocation);
-        if (isInsideGeofence(userLocation)) {
-          // this part runs if user is in the geofence area
-          console.log("inside");
-        } else {
-          console.log("last");
+    $.ajax({
+      url: base_url + "api/field-activities/all/" + id + "/",
+      type: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("access_token"),
+      },
+      success: function (response) {
+        $("#history_title").empty();
+        $("#history_title").text("History of farm, " + farm_name);
+        if (response["plantation"]) {
+          let plantation = response["plantation"];
+          let html =
+            "<table class='table table-striped'><tr><th>Plantation Date</th><th>Crop</th></tr>";
+          plantation.forEach((item) => {
+            let dt = item.date.replace("T", ", ");
+            dt = dt.split(".")[0];
+            html +=
+              "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr></table>";
+          });
+          $("#plantation").html(html);
+        }
+        if (response["fertilizer"]) {
+          let fertilizer = response["fertilizer"];
+          let html =
+            "<table class='table table-striped'><tr><th>Fertilized Date</th><th>Name</th><th>Quantity</th></tr>";
+          fertilizer.forEach((item) => {
+            let dt = item.date.replace("T", ", ");
+            dt = dt.split(".")[0];
+            html +=
+              "<tr><td>" +
+              dt +
+              "</td><td>" +
+              item.name +
+              "</td><td>" +
+              item.quantity +
+              "</td></tr></table>";
+          });
+          $("#fertilizer").html(html);
+        }
+        if (response["irrigation"]) {
+          let irrigation = response["irrigation"];
+          let html =
+            "<table class='table table-striped'><tr><th>Irrigation Date</th><th>Type</th></tr>";
+          irrigation.forEach((item) => {
+            let dt = item.date.replace("T", ", ");
+            dt = dt.split(".")[0];
+            html +=
+              "<tr><td>" + dt + "</td><td>" + item.type + "</td></tr></table>";
+          });
+          $("#irrigation").html(html);
+        }
+        if (response["pestcontrol"]) {
+          let items = response["pestcontrol"];
+          let html =
+            "<table class='table table-striped'><tr><th>Pesticide Date</th><th>Name</th></th><th>Quantity</th></tr>";
+          items.forEach((item) => {
+            let dt = item.date.replace("T", ", ");
+            dt = dt.split(".")[0];
+            html +=
+              "<tr><td>" +
+              dt +
+              "</td><td>" +
+              item.name +
+              "</td><td>" +
+              item.quantity +
+              "</td></tr></table>";
+          });
+          $("#pestcontrol").html(html);
+        }
+        if (response["harvestcrop"]) {
+          let harvest = response["harvestcrop"];
+          let html =
+            "<table class='table table-striped'><tr><th>Harvest Date</th><th>Crop</th><th>Quantity</th></tr>";
+          harvest.forEach((item) => {
+            let dt = item.date.replace("T", ", ");
+            dt = dt.split(".")[0];
+            html +=
+              "<tr><td>" +
+              dt +
+              "</td><td>" +
+              item.crop +
+              "</td><td>" +
+              item.quantity +
+              "</td></tr></table>";
+          });
+          $("#harvest").html(html);
         }
       },
-      (error) => {
-        console.error("Error getting user location:", error);
-      }
-    );
-  } else {
-    console.error("Geolocation is not supported by this browser.");
-  }
-};
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log("Error:", textStatus, errorThrown);
+      },
+    });
+  };
 
-// data rendering starts from here
+  checkStatus = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.setCenter(userLocation);
+          if (isInsideGeofence(userLocation)) {
+            // this part runs if user is in the geofence area
+            console.log("inside");
+          } else {
+            console.log("last");
+          }
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
 
-// data rendering starts from here
+  // data rendering starts from here
 
-// request for fields
-getAllFields = () => {
-  const base_url = "http://127.0.0.1:8000/";
-  $.ajax({
-    url: base_url + "api/field/get/",
-    type: "GET",
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("access_token"),
-    },
-    success: function (response, status, xhr) {
-      response.forEach((field) => {
-        available_fields.push(field.coordinates);
-        field_ids.push(field.id);
-        plotMap(
-          field.coordinates,
-          field.id,
-          field.name,
-          field.nitrogen,
-          field.phosphorus,
-          field.potassium,
-          field.crop,
-          field.ph
-        );
-      });
-    },
-    error: function (error) {
-      console.log(error);
-    },
+  $(document).ready(function () {
+    setTimeout(() => {
+      getAllFields();
+    }, 1000);
   });
-};
 
-$(document).ready(function () {
-  initMap();
-  getAllFields();
-});
+  // track field on move
+  let trackEnabled = false;
+  let intervalId = null; // Store the ID value returned by setInterval
 
-// track field on move
-let trackEnabled = false;
-let intervalId = null; // Store the ID value returned by setInterval
-
-trackField = () => {
-  if (!trackEnabled) {
-    $("#loading").show();
-    $("#buttonHolder").hide();
-    $("#fieldTrackingButton").text("Stop Live Tracking");
-    $("#fieldTrackingButton").addClass("btn-danger").removeClass("text-light");
-    checkStatus();
-    intervalId = setInterval(() => {
+  trackField = () => {
+    if (!trackEnabled) {
+      $("#loading").show();
+      $("#buttonHolder").hide();
+      $("#fieldTrackingButton").text("Stop Live Tracking");
+      $("#fieldTrackingButton")
+        .addClass("btn-danger")
+        .removeClass("text-light");
       checkStatus();
-    }, 5000);
-    trackEnabled = true;
-  } else {
-    clearInterval(intervalId);
-    $("#loading").hide();
-    $("#buttonHolder").show();
-    $("#fieldTrackingButton").text("Enable Live Field Tracking");
-    $("#fieldTrackingButton").addClass("text-light").removeClass("btn-danger");
-    trackEnabled = false;
-  }
-};
+      intervalId = setInterval(() => {
+        checkStatus();
+      }, 5000);
+      trackEnabled = true;
+    } else {
+      clearInterval(intervalId);
+      $("#loading").hide();
+      $("#buttonHolder").show();
+      $("#fieldTrackingButton").text("Enable Live Field Tracking");
+      $("#fieldTrackingButton")
+        .addClass("text-light")
+        .removeClass("btn-danger");
+      trackEnabled = false;
+    }
+  };
+}

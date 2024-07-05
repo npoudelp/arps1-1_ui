@@ -36,7 +36,9 @@ include_once("../partials/header.php");
         </div>
     </div>
 
-
+    <?php
+    include_once("../partials/footer.php");
+    ?>
     <script src="../js/tokenManager.js"></script>
     <script>
         addQuestionAnswer = (question, answer) => {
@@ -98,11 +100,29 @@ include_once("../partials/header.php");
                         setTimeout(() => {
                             $("#fqa").empty();
                             getFqa();
-                        }, 5000);
+                        }, 2000);
+                    }
+                    if (!response.newquestion) {
+                        let childrenHtml = $("#fqa").children().map(function() {
+                            return $(this).text();
+                        }).get();
+                        childrenHtml.forEach((item, i) => {
+                            if (item == autoQuestion || item == question) {
+                                i++;
+                                $("#fqa p").removeClass("border-success text-success");
+                                $("." + i + "").addClass("border-success text-success");
+                                console.log("match");
+                            }
+                            console.log(autoQuestion);
+                        })
                     }
                 },
-                error: function(error) {
-                    showError("An error occured, please try again later");
+                error: function(response, textStatus, errorThrown) {
+                    if (response.status == 400) {
+                        showError(response.responseJSON.error);
+                    } else {
+                        showError("An error occured");
+                    }
                     $("#loading").hide();
                 }
             });
@@ -111,8 +131,11 @@ include_once("../partials/header.php");
         let qna = {}
 
         getFqa = () => {
+            let first_check = false;
             let id = $("#update").val();
+            let latest_id = 0;
             const base_url = "http://127.0.0.1:8000/";
+            let index = "1";
             $.ajax({
                 url: base_url + 'api/frequent-questions/get/',
                 type: 'GET',
@@ -122,11 +145,18 @@ include_once("../partials/header.php");
                 success: function(response) {
                     response.forEach((fqa) => {
                         qna[fqa.id] = fqa.answer;
-                        $("#fqa").append(`<p onclick="getAnswer(${fqa.id})" id="${fqa.id}" class="lead border-bottom my-2">${fqa.question}</p>`);
+
+                        $("#fqa").append(`<p onclick="getAnswer(${fqa.id})" id="${fqa.id}" class="lead border-bottom my-2 ${index}">${fqa.question}</p>`);
+                        index++;
+                        if (!first_check) {
+                            latest_id = fqa.id;
+                            $("#" + latest_id + "").addClass("border-success text-success");
+                            first_check = true;
+                        }
+
                         if (newLoad) {
                             let keys = Object.keys(qna);
                             let firstKey = keys[0];
-                            console.log(firstKey);
                             $("#answer").html(qna[firstKey]);
                             newLoad = false;
                         }
@@ -152,11 +182,15 @@ include_once("../partials/header.php");
         if ($_REQUEST['crop']) {
         ?>
             autoQuestion = "<?php echo $question; ?>";
+            getFqa();
             getAssiatance();
+            <?php
+        } else {
+            ?>autoQuestion
+            getFqa();
         <?php
         }
         ?>
-        getFqa();
     </script>
 
 </body>
