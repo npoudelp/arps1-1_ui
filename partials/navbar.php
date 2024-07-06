@@ -5,10 +5,10 @@ session_start();
     <a class="logo_arps" href="<?php if ($_SESSION['logged']) { ?>
                                             /pages/index.php
                                         <?php
-                                                    } else {
+                                    } else {
                                         ?>
                                         /<?php
-                                                    } ?>
+                                        } ?>
                                         ">ARPS1-1</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -38,16 +38,16 @@ session_start();
             } else {
             ?>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="/">Home</a>
+                    <a class="nav-link" href="#home">Home</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#">About</a>
+                    <a class="nav-link" href="#service">Services</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#">Services</a>
+                    <a class="nav-link" href="#about">About</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#">Contact</a>
+                    <a class="nav-link" href="#contact">Contact</a>
                 </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-success" href="/pages/login.php">Login</a>

@@ -40,5 +40,5 @@ echo ""
         </div>
 </footer>
 <?php
-"";
+
 ?>
