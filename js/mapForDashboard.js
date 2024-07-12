@@ -6,33 +6,33 @@ let available_fields = [];
 let field_ids = [];
 let lastPolygon = null;
 
-getMyLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        map.setCenter(userLocation);
-        const myLocation = new google.maps.LatLng(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-        return myLocation;
-      },
-      (error) => {
-        console.error("Error getting user location:", error);
-      }
-    );
-  } else {
-    console.error("Geolocation is not supported by this browser.");
-  }
-};
-
-let current_map_location = getMyLocation();
-
 async function initMap() {
+  getMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.setCenter(userLocation);
+          const myLocation = new google.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          return myLocation;
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  let current_map_location = getMyLocation();
+
   const { Map } = await google.maps.importLibrary("maps");
 
   map = new Map(document.getElementById("mapDashboard"), {
@@ -240,6 +240,7 @@ async function initMap() {
       success: function (response) {
         $("#update").hide();
         $("#fieldAddForm").hide();
+        $("#coordinates").val(response.coordinates);
         $("#name").val(response.name);
         farm_name = response.name;
         $("#update").val(response.id);
@@ -270,8 +271,9 @@ async function initMap() {
             let dt = item.date.replace("T", ", ");
             dt = dt.split(".")[0];
             html +=
-              "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr></table>";
+              "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr>";
           });
+          html += "</table>";
           $("#plantation").html(html);
         }
         if (response["fertilizer"]) {
@@ -288,8 +290,9 @@ async function initMap() {
               item.name +
               "</td><td>" +
               item.quantity +
-              "</td></tr></table>";
+              "</td></tr>";
           });
+          html += "</table>";
           $("#fertilizer").html(html);
         }
         if (response["irrigation"]) {
@@ -300,8 +303,10 @@ async function initMap() {
             let dt = item.date.replace("T", ", ");
             dt = dt.split(".")[0];
             html +=
-              "<tr><td>" + dt + "</td><td>" + item.type + "</td></tr></table>";
+              "<tr><td>" + dt + "</td><td>" + item.type + "</td></tr>";
           });
+          html += "</table>";
+
           $("#irrigation").html(html);
         }
         if (response["pestcontrol"]) {
@@ -318,8 +323,9 @@ async function initMap() {
               item.name +
               "</td><td>" +
               item.quantity +
-              "</td></tr></table>";
+              "</td></tr>";
           });
+          html += "</table>";
           $("#pestcontrol").html(html);
         }
         if (response["harvestcrop"]) {
@@ -336,8 +342,9 @@ async function initMap() {
               item.crop +
               "</td><td>" +
               item.quantity +
-              "</td></tr></table>";
+              "</td></tr>";
           });
+          html += "</table>";
           $("#harvest").html(html);
         }
       },

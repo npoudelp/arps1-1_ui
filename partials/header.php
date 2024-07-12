@@ -18,29 +18,29 @@ echo '';
     <link rel="stylesheet" href="/css/main.css">
 
     <script>
-        if (sessionStorage.getItem("user_logged")) {
-            $.ajax({
-                url: 'http://127.0.0.1/partials/set_session.php',
-                type: 'post',
-                data: {
-                    'logged': true
-                },
-                success: function(response) {
-                    // do here
-                }
-            });
-        } else {
-            $.ajax({
-                url: 'http://127.0.0.1/partials/destroy_session.php',
-                type: 'post',
-                data: {
-                    'logged': false
-                },
-                success: function(response) {
-                    // do here
-                }
-            });
-        }
+        // if (!sessionStorage.getItem("user_logged")) {
+        //     $.ajax({
+        //         url: 'http://127.0.0.1/partials/destroy_session.php',
+        //         type: 'post',
+        //         data: {
+        //             'logged': false
+        //         },
+        //         success: function(response) {
+        //             // localStorage.clear();
+        //         }
+        //     });
+        // } else {
+        //     $.ajax({
+        //         url: 'http://127.0.0.1/partials/set_session.php',
+        //         type: 'post',
+        //         data: {
+        //             'logged': true
+        //         },
+        //         success: function(response) {
+        //             // localStorage.clear();
+        //         }
+        //     });
+        // }
     </script>
 </head>
 <?php

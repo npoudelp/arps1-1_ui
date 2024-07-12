@@ -84,7 +84,7 @@ include_once("../partials/header.php");
                     if (xhr.status == 200) {
                         localStorage.setItem("access_token", response.access);
                         localStorage.setItem("refresh_token", response.refresh);
-                        window.location.href = "/pages/index.php";
+                        window.location.href = "/partials/set_session.php?logged=true";
                     }
                 }
             }).fail(function(response) {

@@ -1,5 +1,6 @@
 <?php
 $page_title = "arps | Predictions";
+$dashboard = "active";
 
 if (!isset($_REQUEST['id'])) {
     header('Location: /pages/dashboard.php');
@@ -36,6 +37,8 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
                         <span class="btn btn-success" onclick="predictCrop()">Recomend</span>
                     </div>
                 </div>
+                <hr class="border-success my-3">
+                <div class="container-fluid" id="previous_crops"></div>
             </div>
         </div>
     </div>
@@ -43,10 +46,38 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
     <?php
     include_once(".//partials/footer.php");
     ?>
-    
+
     <script src="../js/tokenManager.js"></script>
     <script>
         $(document).ready(function() {
+            const base_url = 'http://127.0.0.1:8000/';
+            $.ajax({
+                url: base_url + 'api/plantation/get/' + <?php echo $_REQUEST['id']; ?> + '/',
+                type: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('access_token')
+                },
+                success: function(response) {
+                    if (response.length == 0) {
+                        $("#previous_crops").html("<p class='lead text-center'>No crop planted yet</p>");
+                    } else {
+                        let html = "<p class='font-weight-bold lead text-center'>Previously Planted Crops</p><table class='table table-striped'><tr><th>Plantation Date</th><th>Crop</th></tr>";
+                        response.forEach((item) => {
+                            let dt = item.date.replace("T", ", ");
+                            dt = dt.split(".")[0];
+                            html += "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr>";
+                        });
+                        html += "</table>";
+                        $("#previous_crops").html(html);
+
+
+                    }
+
+                }
+            });
+
+
+
             $('#search').on('keyup', function() {
                 let value = $(this).val().toLowerCase();
                 $("#district option").each(function() {

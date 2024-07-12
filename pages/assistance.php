@@ -1,5 +1,6 @@
 <?php
 $page_title = "arps | Assisance";
+$assistance = "active";
 if ($_REQUEST['crop']) {
     $crop = $_REQUEST['crop'];
     $question = "Details on planting, growing and harvesting $crop";
@@ -75,7 +76,7 @@ include_once("../partials/header.php");
                 showError("Please enter a question");
                 return;
             }
-            $("#assistContainer").hide();
+            $("#assistContainer, #footer").hide();
             $("#loading").css("top", "50%").css("left", "50%").css("position", "fixed").show();
 
             const base_url = "http://127.0.0.1:8000/";
@@ -94,7 +95,7 @@ include_once("../partials/header.php");
                     answer = answer.replace(/\*\*(.*?)\*\*/g, "<br><span class='font-weight-bold'>$1</span>").replace(/\*/g, "<br>");
                     $("#answer").html(answer);
                     $("#loading").hide();
-                    $("#assistContainer").show();
+                    $("#assistContainer, #footer").show();
                     if (response.newquestion) {
                         addQuestionAnswer(question, answer);
                         setTimeout(() => {

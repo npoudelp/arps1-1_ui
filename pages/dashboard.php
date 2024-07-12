@@ -1,5 +1,6 @@
     <?php
     $page_title = "arps | Dashboard";
+    $dashboard = "active";
     include_once("../partials/header.php");
     ?>
     <link rel="stylesheet" href="../css/loading.css">

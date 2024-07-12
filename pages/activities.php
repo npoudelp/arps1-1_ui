@@ -1,5 +1,6 @@
 <?php
 $page_title = "Activities | Dashboard";
+$dashboard = "active";
 include_once("../partials/header.php");
 if ((!isset($_REQUEST['id'])) || (!isset($_REQUEST['crop']))) {
     header("Location: ./dashboard.php");
@@ -94,7 +95,7 @@ $crop = $_REQUEST['crop'];
                     <select class="form-control" id="irrigation_type">
                         <option value="null">--Select Irrigation Type--</option>
                         <option value="complete">Complete</option>
-                        <option value="sprinkler">Partial</option>
+                        <option value="partial">Partial</option>
                     </select>
                     <br>
                     <button class="btn btn-outline-dark" onclick="addIrrigation()">Submit</button>
