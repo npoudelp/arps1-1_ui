@@ -13,7 +13,8 @@ include_once("../partials/header.php");
     <?php
     include_once("../partials/navbar.php");
     ?>
-    <div id="loading"></div>
+    <div id="loading">
+    </div>
     <div class="container-fluid my-5" id="assistContainer">
         <div class="row py-2">
             <div class="col-md-7 border-right">

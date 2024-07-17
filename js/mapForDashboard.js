@@ -69,6 +69,7 @@ async function initMap() {
         lastPolygon.setMap(null);
         lastPolygon = null;
         $("#coordinates_value").val("");
+        $("#fieldAddForm").hide();
       }
     }
   });
@@ -162,7 +163,7 @@ async function initMap() {
       geofenceArea.setPath(coordinates_array);
       if (google.maps.geometry.poly.containsLocation(latLng, geofenceArea)) {
         viewLiveDetails(field_ids[index]);
-        console.log(field_ids[index]);
+        // console.log(field_ids[index]);
         return true;
       }
       index++;
@@ -365,9 +366,9 @@ async function initMap() {
           map.setCenter(userLocation);
           if (isInsideGeofence(userLocation)) {
             // this part runs if user is in the geofence area
-            console.log("inside");
+            // console.log("inside");
           } else {
-            console.log("last");
+            // console.log("last");
           }
         },
         (error) => {

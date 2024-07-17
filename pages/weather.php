@@ -22,7 +22,7 @@ include_once("../partials/header.php");
     <script src="../js/tokenManager.js"></script>
     <script>
         pinFromWeather = (station) => {
-            if(!window.confirm("Are you sure you want to pin "+ station +" to navbar?")){
+            if (!window.confirm("Are you sure you want to pin " + station + " to navbar?")) {
                 return;
             }
             if (station == "0") {
@@ -41,7 +41,6 @@ include_once("../partials/header.php");
                 },
                 success: function(response) {
                     localStorage.setItem("location", station);
-                    showError("Location pinned successfully");
                     window.location.reload();
                 },
                 error: function() {
@@ -53,7 +52,7 @@ include_once("../partials/header.php");
         $(document).ready(function() {
             base_url = "http://127.0.0.1:8000/";
             $.ajax({
-                url: base_url + '/api/scrape/all/',
+                url: base_url + 'api/scrape/all/',
                 type: 'get',
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("access_token")
@@ -62,14 +61,20 @@ include_once("../partials/header.php");
                     $("#weather_display").empty();
                     html = "<p class='font-weight-bold text-center lead'>Today's Weather Data</p>";
                     html += "<table class='table table-striped'>";
-                    html += "<tr><th>Station</th><th>Min Temp</th><th>Max Temp</th><th>Rain</th></tr>";
+                    html += "<tr><th>Station</th><th>Max Temp</th><th>Min Temp</th><th>Rain</th><th></th></tr>";
                     $.each(response, (i, data) => {
                         $.each(data, (j, weather) => {
                             min = weather[1];
                             max = weather[2];
                             rain = weather[3];
+                            color = '';
+                            bi = 'bi-pin';
+                            if(weather[0] == localStorage.getItem("location")){
+                                color = 'text-success';
+                                bi = 'bi-pin-fill';
+                            }
                             html += `
-                            <tr><td id='${weather[0]}'>${weather[0]}</td><td>${min}°C</td><td>${max}°C</td><td>${rain}mm <span onclick=pinFromWeather('${weather[0]}')><i class='bi bi-pin text-green lead ml-3'></i></span></td></tr>
+                            <tr><td id='${weather[0]}'>${weather[0]}</td><td>${min}°C</td><td>${max}°C</td><td>${rain}mm<td><span onclick=pinFromWeather('${weather[0]}')><i class='bi ${bi} ${color} lead ml-3'></i></span></td></td></tr>
                             `;
                         });
                     });
@@ -78,6 +83,25 @@ include_once("../partials/header.php");
                 },
                 error: function() {
                     showError("An error occurred while fetching weather data");
+                }
+            })
+
+
+            $.ajax({
+                // https://www.dhm.gov.np/frontend_dhm/hydrology/getRainfall/1 river status flood monitoring
+                // https://103.215.208.77/SASIAFFG_CONSOLE/ wtf is this
+                url: "https://www.dhm.gov.np/frontend_dhm/hydrology/getRainfallFilter",
+                type: "GET",
+                data: {
+                    type: "0",
+                    mapValue: "all",
+                    hour: "1"
+                },
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function() {
+                    console.log("An error occurred while fetching rainfall data");
                 }
             })
         })

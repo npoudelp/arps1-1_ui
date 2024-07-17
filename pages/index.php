@@ -79,20 +79,22 @@ $stations = [
             if (!localStorage.getItem("location")) {
                 base_url = "http://127.0.0.1:8000/";
                 $.ajax({
-                    url: base_url + '/api/pinned-location/get/',
+                    url: base_url + 'api/pinned-location/get/',
                     type: 'get',
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("access_token")
                     },
                     success: function(response, status, xhr) {
-                        localStorage.setItem("location", response.location);
-                        window.location.reload();
+                        if (xhr.status == 200) {
+                            localStorage.setItem("location", response.location);
+                            window.location.reload();
+                        }
                     },
                     error: function() {
                         showError("An error occurred while fetching weather data");
                     }
                 })
-            }else{
+            } else {
                 window.location.href = "./dashboard.php";
             }
         })

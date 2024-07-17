@@ -27,7 +27,7 @@
                         </div>
                         <div class="form-group">
                             <label for="crop_name">Crop Planted</label>
-                            <input type="text" maxlength="35" class="form-control" id="crop_name" placeholder="You can add palt from recomend section too">
+                            <input type="text" maxlength="35" class="form-control" id="crop_name" placeholder="You can add plant from recomend section too">
                         </div>
                         <div class="form-group">
                             <label for="nitrogen">Nitrogen Content (KG/HA)</label>
@@ -155,7 +155,7 @@
                 const base_url = "http://127.0.0.1:8000/";
                 $.ajax({
                     url: base_url + 'api/field/delete/' + id + '/',
-                    type: 'DELETE',
+                    type: 'PUT',
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('access_token')
                     },
@@ -167,7 +167,7 @@
                         if (response.status == 400) {
                             showError(response.responseJSON.error);
                         } else {
-                            showError("An error occured");
+                            showError("An error occured " + response.status+ " "+ errorThrown);
 
                         }
                     }

@@ -69,7 +69,7 @@ $crop = $_REQUEST['crop'];
 
                 <!-- form for plantation -->
                 <div id="plantation" class="my-3">
-                    <button class="btn btn-success" onclick="plantCrop()">Plant <?php echo $crop; ?> in this farm</button>
+                    <button class="btn btn-success" id="plantButton" onclick="plantCrop()">Plant <?php echo $crop; ?> in this farm</button>
                 </div>
                 <!-- form for pest -->
                 <div id="pest" class="my-3">
@@ -542,7 +542,10 @@ $crop = $_REQUEST['crop'];
                 },
                 success: function(response) {
                     $("#name").text(response.name);
+                    let url = '/pages/prediction.php?id='+id;
+                    let toAppend = "<a href='"+url+"' class='ml-2'><i class='bi bi-pen text-danger'></a>";
                     $("#crop").text(response.crop);
+                    $("#crop").append(toAppend);
                     $("#nitrogen").text(response.nitrogen + " KG/HA");
                     $("#phosphorus").text(response.phosphorus + " KG/HA");
                     $("#potassium").text(response.potassium + " KG/HA");
@@ -554,6 +557,21 @@ $crop = $_REQUEST['crop'];
                         $("#plantation").text("No crop added to plant");
                         $("#plantation").addClass("btn btn-danger");
                         $("#plantation").attr("onclick", "showError('Please add a crop to field details to plant it')");
+                    }
+                    if (response.harvested == false) {
+                        $("#planataion button").text("Crop already planted");
+                        $("#plantation button").attr('disabled', 'true').attr("onclick", "showError('Crop already planted')");
+                    }else{
+                        $("#plantation button").text("Plant <?php echo $_REQUEST['crop']; ?> in this farm");
+                        $("#plantation button").attr('disabled', false);
+                    }
+                },
+                error: function(response, textStatus, errorThrown) {
+                    if (response.status == 404) {
+                        showError(response.responseJSON.error);
+                    } else {
+                        showError("An error occured");
+
                     }
                 }
             });

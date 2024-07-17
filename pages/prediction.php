@@ -140,6 +140,10 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
         }
 
         addToFarm = (crop) => {
+            if(!confirm("Are you sure you want to add " + crop + " crop to your field?")){
+                return;
+            }
+
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = 'http://127.0.0.1:8000/';
             let data = {
@@ -155,6 +159,16 @@ $districts = ['Arghakhanchi', 'Baglung', 'Baitadi', 'Bajang', 'Banke', 'Bara', '
                 contentType: 'application/json',
                 success: function(response) {
                     showError(crop + " crop added to field");
+                    let url = '/pages/activities.php?id='+<?php echo $_REQUEST['id']; ?>+'&crop=' + crop;
+                    window.location.href = url;
+                },
+                error: function(response, textStatus, errorThrown) {
+                    if (response.status == 400) {
+                        showError(response.responseJSON.error);
+                    } else {
+                        showError("An error occured");
+
+                    }
                 }
             });
         }
