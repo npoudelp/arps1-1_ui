@@ -42,13 +42,13 @@ session_start();
                     <a class="nav-link" href="#home">Home</a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#service">Service</a>
+                    <a class="nav-link" href="#service"></a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#about">About</a>
+                    <a class="nav-link" href="#about"></a>
                 </li>
                 <li class="nav-item mx-3">
-                    <a class="nav-link" href="#contact">Contact</a>
+                    <a class="nav-link" href="#contact"></a>
                 </li>
                 <li class="nav-item mx-3">
                     <a class="nav-link btn btn-outline-success" href="/pages/login.php">Login</a>

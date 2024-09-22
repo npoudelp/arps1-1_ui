@@ -70,7 +70,7 @@ include_once("../partials/header.php");
                             color = '';
                             bi = 'bi-pin';
                             if(weather[0] == localStorage.getItem("location")){
-                                color = 'text-success';
+                                color = 'text-danger';
                                 bi = 'bi-pin-fill';
                             }
                             html += `
