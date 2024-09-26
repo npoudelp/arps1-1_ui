@@ -1,6 +1,6 @@
 <?php
 echo ""
-?>
+    ?>
 <footer id="footer" class="bg-dark text-center text-white">
     <div class="container p-4">
         <section class="mb-4">
@@ -25,9 +25,10 @@ echo ""
         </section>
         <section class="mb-4">
             <p class="">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt distinctio earum
-                repellat quaerat voluptatibus placeat nam, commodi optio pariatur est quia magnam
-                eum harum corrupti dicta, aliquam sequi voluptate quas.
+                ARPS1-1 is the very super-brain you need to improve your agribusiness in terms of productivity as well
+                as profitability. We offer best-in-industry farm management support for agribusinesses ranging from
+                farms & plantations contract farmers, exporters & packhouses, to governing bodies and financial
+                institutions.
             </p>
         </section>
         <hr class="mb-4 border border-success">
@@ -35,7 +36,7 @@ echo ""
         <div class="container mb-0">
             <p class="text-center text-muted">
                 &copy; <?php echo date("Y"); ?> All rights reserved:
-                <a href="http://nirojpoudel.com.np" class="text-decoration-none text-muted">ARPS1-1</a>
+                <a href="#" class="text-decoration-none text-muted">ARPS1-1</a>
             </p>
         </div>
 </footer>

@@ -29,6 +29,10 @@ $crop = $_REQUEST['crop'];
                         <td id="crop"></td>
                     </tr>
                     <tr>
+                        <th>Crop Status</th>
+                        <td id="cropStatus"></td>
+                    </tr>
+                    <tr>
                         <th>Nitrogen Content</th>
                         <td id="nitrogen"></td>
                     </tr>
@@ -46,37 +50,53 @@ $crop = $_REQUEST['crop'];
                     </tr>
 
                 </table>
+            </div>
+            <div class="col-md-5" id="activityHistory">
 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
                 <!-- tab for plantation pest fertilizer irrigation harvest -->
                 <p class="lead font-weight-bold">Update Field Activities</p>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="plantation-tab" data-bs-toggle="tab" data-bs-target="#plantation" type="button" role="tab" aria-controls="plantation" aria-selected="true">Plantation</button>
+                        <button class="nav-link active" id="plantation-tab" data-bs-toggle="tab"
+                            data-bs-target="#plantation" type="button" role="tab" aria-controls="plantation"
+                            aria-selected="true">Plantation</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pest-tab" data-bs-toggle="tab" data-bs-target="#pest" type="button" role="tab" aria-controls="pest" aria-selected="false">Pest Control</button>
+                        <button class="nav-link" id="pest-tab" data-bs-toggle="tab" data-bs-target="#pest" type="button"
+                            role="tab" aria-controls="pest" aria-selected="false">Pest Control</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="fertilizer-tab" data-bs-toggle="tab" data-bs-target="#fertilizer" type="button" role="tab" aria-controls="fertilizer" aria-selected="false">Fertilizer Added</button>
+                        <button class="nav-link" id="fertilizer-tab" data-bs-toggle="tab" data-bs-target="#fertilizer"
+                            type="button" role="tab" aria-controls="fertilizer" aria-selected="false">Fertilizer
+                            Added</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="irrigation-tab" data-bs-toggle="tab" data-bs-target="#irrigation" type="button" role="tab" aria-controls="irrigation" aria-selected="false">Irrigation</button>
+                        <button class="nav-link" id="irrigation-tab" data-bs-toggle="tab" data-bs-target="#irrigation"
+                            type="button" role="tab" aria-controls="irrigation"
+                            aria-selected="false">Irrigation</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="harvest-tab" data-bs-toggle="tab" data-bs-target="#harvest" type="button" role="tab" aria-controls="harvest" aria-selected="false">Harvest</button>
+                        <button class="nav-link" id="harvest-tab" data-bs-toggle="tab" data-bs-target="#harvest"
+                            type="button" role="tab" aria-controls="harvest" aria-selected="false">Harvest</button>
                     </li>
                 </ul>
 
                 <!-- form for plantation -->
                 <div id="plantation" class="my-3">
-                    <button class="btn btn-success" id="plantButton" onclick="plantCrop()">Plant <?php echo $crop; ?> in this farm</button>
+                    <button class="btn btn-success" id="plantButton" onclick="plantCrop()">Plant <?php echo $crop; ?> in
+                        this farm</button>
                 </div>
                 <!-- form for pest -->
                 <div id="pest" class="my-3">
                     <label for="name">Name of Pest Control</label>
                     <input type="text" class="form-control" id="pest_name" placeholder="Enter Name of Pest Control">
                     <label for="quantity">Quantity (KG)</label>
-                    <input type="number" step="0.01" class="form-control" id="pest_quantity" placeholder="Enter Quantity">
+                    <input type="number" step="0.01" class="form-control" id="pest_quantity"
+                        placeholder="Enter Quantity">
                     <br>
                     <button class="btn btn-outline-dark" onclick="addPest()">Submit</button>
                 </div>
@@ -85,7 +105,8 @@ $crop = $_REQUEST['crop'];
                     <label for="name">Name of Fertilizer</label>
                     <input type="text" class="form-control" id="fertilizer_name" placeholder="Enter Name of Fertilizer">
                     <label for="quantity">Quantity (KG)</label>
-                    <input type="number" step="0.01" class="form-control" id="fertilizer_quantity" placeholder="Enter Quantity">
+                    <input type="number" step="0.01" class="form-control" id="fertilizer_quantity"
+                        placeholder="Enter Quantity">
                     <br>
                     <button class="btn btn-outline-dark" onclick="addFertillizer()">Submit</button>
                 </div>
@@ -103,16 +124,68 @@ $crop = $_REQUEST['crop'];
                 <!-- form for harvest -->
                 <div id="harvest" class="my-3">
                     <label for="quantity">Quantity (KG)</label>
-                    <input type="number" step="0.01" class="form-control" id="harvest_quantity" placeholder="Enter Quantity">
+                    <input type="number" step="0.01" class="form-control" id="harvest_quantity"
+                        placeholder="Enter Quantity">
                     <br>
                     <button class="btn btn-outline-dark" onclick="addHarvest()">Submit</button>
                 </div>
             </div>
-            <div class="col-md-5" id="activityHistory">
-
+            <div class="col-md-5">
+                <!-- qr portion starts here -->
+                <main>
+                    <div id="display" onclick="download()" class="m-3"></div><!-- name of this div is colled in QRCode parameter -->
+                    
+                    <span id="qr_tag" class="text-muted font-italic" class="m-5">Click QR code to download it</span>
+                </main>
             </div>
         </div>
     </div>
+
+
+
+    <script>
+        var generated = false;
+        var latestPlantationDate;
+        $("#qr_tag").hide();
+
+        gen_qr = () => {
+            generated = true;
+            $("#display").html("");
+            latestPlantationDate = document.getElementById("pDate").innerText;
+            let qr_data = "Field Name: " + document.getElementById("name").innerText +
+                "\n-" +
+                "\nCurrent Crop: " + document.getElementById("crop").innerText +
+                "\nCrop Status: " + document.getElementById("cropStatus").innerText +
+                "\nLatest Plantation: " + latestPlantationDate +
+                "\n-" +
+                "\nNitrogen: " + document.getElementById("nitrogen").innerText +
+                "\nPhosphorus: " + document.getElementById("phosphorus").innerText +
+                "\nPotassium: " + document.getElementById("potassium").innerText +
+                "\nPH: " + document.getElementById("ph").innerText;
+            var qrcode = new QRCode("display", qr_data); //generating qr
+            $("#qr_tag").show();
+        }
+
+        setTimeout(gen_qr, 1500);
+
+        download = () => { //this function downlods the qr image generated
+            if (generated) {
+                var image_attr = document.getElementById("display").getElementsByTagName("img");
+                var qrUrl = image_attr[0].src;
+
+                const link = document.createElement('a');
+                console.log(link);
+                link.href = qrUrl;
+                link.download = qrUrl;
+                document.body.appendChild(link);
+                link.click();
+            } else {
+                alert("You have not generated the qr code.")
+            }
+        }
+    </script>
+    <!-- qr portion ends here  -->
+
     <?php
     include_once("../partials/footer.php");
     ?>
@@ -128,12 +201,12 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
                     let html = "<table class='table table-striped'><tr><th>Plantation Date</th><th>Crop</th></tr>";
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
                         dt = dt.split(".")[0];
-                        html += "<tr><td>" + dt + "</td><td>" + item.crop + "</td></tr>";
+                        html += "<tr><td id='pDate'>" + dt + "</td><td>" + item.crop + "</td></tr>";
                     });
                     html += "</table>";
                     $("#activityHistory").html(html);
@@ -150,7 +223,7 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
                     let html = "<table class='table table-striped'><tr><th>Irrigation Date</th><th>Type</th></tr>";
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
@@ -172,7 +245,7 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
                     let html = "<table class='table table-striped'><tr><th>Fertilizer Date</th><th>Name</th><th>Quantity</th></tr>";
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
@@ -194,7 +267,7 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
                     let html = "<table class='table table-striped'><tr><th>Harvest Date</th><th>Crop</th><th>Quantity</th></tr>";
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
@@ -216,7 +289,7 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
                     let html = "<table class='table table-striped'><tr><th>Pest Control Date</th><th>Name</th><th>Quantity</th></tr>";
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
@@ -253,18 +326,19 @@ $crop = $_REQUEST['crop'];
                     crop: "<?php echo $_REQUEST['crop']; ?>",
                     quantity: quantity
                 },
-                success: function(response, status, xhr) {
+                success: function (response, status, xhr) {
                     if (xhr.status == 200) {
                         showError("Harvest added successfully");
                         $("#harvest_quantity").val("");
                         setTimeout(() => {
                             getHarvestHistory();
+                            viewDetails();
                         }, 700);
                     } else {
                         console.log(response)
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 400) {
                         showError(response.responseJSON.error);
                     } else {
@@ -297,7 +371,7 @@ $crop = $_REQUEST['crop'];
                     field: id,
                     type: type
                 },
-                success: function(response, status, xhr) {
+                success: function (response, status, xhr) {
                     if (xhr.status == 200) {
                         showError("Irrigation added successfully");
                         $("#irrigation_type").val("null");
@@ -308,7 +382,7 @@ $crop = $_REQUEST['crop'];
                         console.log(response)
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 400) {
                         showError(response.responseJSON.error);
                     } else {
@@ -343,7 +417,7 @@ $crop = $_REQUEST['crop'];
                     name: field_name,
                     quantity: quantity
                 },
-                success: function(response, status, xhr) {
+                success: function (response, status, xhr) {
                     if (xhr.status == 200) {
                         showError("Fertilizer added successfully");
                         $("#fertilizer_name").val("");
@@ -355,7 +429,7 @@ $crop = $_REQUEST['crop'];
                         console.log(response)
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 400) {
                         showError(response.responseJSON.error);
                     } else {
@@ -389,7 +463,7 @@ $crop = $_REQUEST['crop'];
                     name: field_name,
                     quantity: quantity
                 },
-                success: function(response, status, xhr) {
+                success: function (response, status, xhr) {
                     if (xhr.status == 200) {
                         showError("Pest control added successfully");
                         $("#pest_name").val("");
@@ -401,7 +475,7 @@ $crop = $_REQUEST['crop'];
                         console.log(response)
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 400) {
                         showError(response.responseJSON.error);
                     } else {
@@ -433,17 +507,19 @@ $crop = $_REQUEST['crop'];
                     field: id,
                     crop: crop
                 },
-                success: function(response, status, xhr) {
+                success: function (response, status, xhr) {
                     if (xhr.status == 200) {
                         showError("Crop planted successfully");
                         setTimeout(() => {
                             getPlantationHistory();
+                            viewDetails();
+                            setTimeout(gen_qr, 1000);
                         }, 700);
                     } else {
                         console.log(response)
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 400) {
                         showError(response.responseJSON.error);
                     } else {
@@ -463,7 +539,7 @@ $crop = $_REQUEST['crop'];
             $("#fertilizer").hide();
             $("#irrigation").hide();
             $("#harvest").hide();
-            $('#myTab li button').on('click', function(e) {
+            $('#myTab li button').on('click', function (e) {
                 e.preventDefault();
                 $(this).tab('show');
                 if (this.id == "plantation-tab") {
@@ -502,32 +578,35 @@ $crop = $_REQUEST['crop'];
                     $("#harvest").show();
                     getHarvestHistory();
                 }
+
             });
 
-            $("#fertilizer_quantity, #fertilizer_name").keypress(function(event) {
+            $("#fertilizer_quantity, #fertilizer_name").keypress(function (event) {
                 if (event.which == 13) {
                     event.preventDefault();
                     addFertillizer();
                 }
             });
-            $("#pest_quantity, #pest_name").keypress(function(event) {
+            $("#pest_quantity, #pest_name").keypress(function (event) {
                 if (event.which == 13) {
                     event.preventDefault();
                     addPest();
                 }
             });
-            $("#irrigation_type").keypress(function(event) {
+            $("#irrigation_type").keypress(function (event) {
                 if (event.which == 13) {
                     event.preventDefault();
                     addIrrigation();
                 }
             });
-            $("#harvest_quantity").keypress(function(event) {
+            $("#harvest_quantity").keypress(function (event) {
                 if (event.which == 13) {
                     event.preventDefault();
                     addHarvest();
                 }
             });
+
+
         });
 
         viewDetails = () => {
@@ -540,12 +619,19 @@ $crop = $_REQUEST['crop'];
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('access_token')
                 },
-                success: function(response) {
+                success: function (response) {
+                    var fieldStatus;
+                    if (response.harvested == true) {
+                        fieldStatus = "Not Planted";
+                    } else {
+                        fieldStatus = "Planted";
+                    }
                     $("#name").text(response.name);
-                    let url = '/pages/prediction.php?id='+id;
-                    let toAppend = "<a href='"+url+"' class='ml-2'><i class='bi bi-pen text-danger'></a>";
+                    let url = '/pages/prediction.php?id=' + id;
+                    let toAppend = "<a href='" + url + "' class='ml-2'><i class='bi bi-pen text-danger'></a>";
                     $("#crop").text(response.crop);
                     $("#crop").append(toAppend);
+                    $("#cropStatus").text(fieldStatus);
                     $("#nitrogen").text(response.nitrogen + " KG/HA");
                     $("#phosphorus").text(response.phosphorus + " KG/HA");
                     $("#potassium").text(response.potassium + " KG/HA");
@@ -561,12 +647,12 @@ $crop = $_REQUEST['crop'];
                     if (response.harvested == false) {
                         $("#planataion button").text("Crop already planted");
                         $("#plantation button").attr('disabled', 'true').attr("onclick", "showError('Crop already planted')");
-                    }else{
+                    } else {
                         $("#plantation button").text("Plant <?php echo $_REQUEST['crop']; ?> in this farm");
                         $("#plantation button").attr('disabled', false);
                     }
                 },
-                error: function(response, textStatus, errorThrown) {
+                error: function (response, textStatus, errorThrown) {
                     if (response.status == 404) {
                         showError(response.responseJSON.error);
                     } else {
