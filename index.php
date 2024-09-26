@@ -6,9 +6,12 @@ include_once("./partials/header.php");
     <?php
     include_once("./partials/navbar.php");
     ?>
-    <div class="container-fluid py-3 bg-light text-dark" id="home">
-        <div class="container">
-            <div class="row">
+
+
+
+    <div class="container-fluid py-3 text-dark" id="home">
+        <div class="container bg-light">
+            <div class="row" style="display:flex; justify-content:center ; align-items:center;">
                 <div class="col-md-8">
                     <p class="text-center h3">
                         <span class="border-bottom">
@@ -16,8 +19,10 @@ include_once("./partials/header.php");
                         </span>
                     </p>
                     <p class="lead text-center">
-                        A technology created upto the needs of farmers. An intelligent platform that assists the farmers to
-                        plan and manage fields and crops. Harvesting the data from the field and providing the farmers with
+                        A technology created upto the needs of farmers. An intelligent platform that assists the farmers
+                        to
+                        plan and manage fields and crops. Harvesting the data from the field and providing the farmers
+                        with
                         the best possible solution to increase the productivity.
                     </p>
                 </div>
@@ -28,9 +33,9 @@ include_once("./partials/header.php");
         </div>
     </div>
 
-    <div class="container-fluid py-3 bg-dark text-light" id="service">
-        <div class="container">
-            <div class="row">
+    <div class="container-fluid" id="service">
+        <div class="container bg-dark text-white">
+            <div class="row" style="display:flex; justify-content:center ; align-items:center;">
                 <div class="col-md-4">
                     <img src="./images/ai.jpg" alt="" class="img-fluid">
                 </div>
@@ -49,9 +54,9 @@ include_once("./partials/header.php");
         </div>
     </div>
 
-    <div class="container-fluid py-3 bg-light text-dark" id="about">
-        <div class="container">
-            <div class="row">
+    <div class="container-fluid py-3 text-dark" id="about">
+        <div class="container bg-light">
+            <div class="row" style="display:flex; justify-content:center ; align-items:center;">
                 <div class="col-md-8">
                     <p class="text-center h3">
                         <span class="border-bottom">
@@ -59,8 +64,10 @@ include_once("./partials/header.php");
                         </span>
                     </p>
                     <p class="text-center lead">
-                        Logging and tracking agricultural activities, monitoring the field and crop health, and providing
-                        essentail assistance from selection of crop to resolving the queries of the farmers. It feels like
+                        Logging and tracking agricultural activities, monitoring the field and crop health, and
+                        providing
+                        essentail assistance from selection of crop to resolving the queries of the farmers. It feels
+                        like
                         having a virtual assistant in the field.
                     </p>
                 </div>
@@ -72,7 +79,7 @@ include_once("./partials/header.php");
     </div>
 
     <div class="container-fluid py-3 bg-dark text-light" id="contact">
-        
+
     </div>
 
     <?php
@@ -84,7 +91,7 @@ include_once("./partials/header.php");
         $.ajax({
             url: "https:www.dhm.gov.np/frontend_dhm/hydrology/getRainfallWatchMapBySeriesId",
             type: "GET",
-            success: function(data) {
+            success: function (data) {
                 console.log(data);
             }
         });
