@@ -19,4 +19,5 @@ include_once("./partials/header.php");
     });
 </script>
 
+<!-- https://www.dhm.gov.np/frontend_dhm/home/getAPIData/1 -->
 </html>
