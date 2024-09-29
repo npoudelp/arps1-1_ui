@@ -25,7 +25,7 @@ $crop = $_REQUEST['crop'];
                         <td id="name"></td>
                     </tr>
                     <tr>
-                        <th>Current Crop</th>
+                        <th>Selected Crop</th>
                         <td id="crop"></td>
                     </tr>
                     <tr>
@@ -133,10 +133,18 @@ $crop = $_REQUEST['crop'];
             <div class="col-md-5">
                 <!-- qr portion starts here -->
                 <main>
-                    <div id="display" onclick="download()" class="m-3"></div><!-- name of this div is colled in QRCode parameter -->
-                    
+                    <div id="display" onclick="download()" class="m-3"></div>
+                    <!-- name of this div is colled in QRCode parameter -->
+
                     <span id="qr_tag" class="text-muted font-italic" class="m-5">Click QR code to download it</span>
                 </main>
+            </div>
+        </div>
+
+        <!-- visualization -->
+        <div class="row">
+            <div class="col">
+                <canvas id="disp" style="width:100%;"></canvas>
             </div>
         </div>
     </div>
@@ -144,6 +152,152 @@ $crop = $_REQUEST['crop'];
 
 
     <script>
+        // chart start here
+        let canvas_used = false;
+        let myLineChart;
+        // Creating line chart
+        let labelsF = [];
+        let dataSetF = [];
+        let labelsP = [];
+        let dataSetP = [];
+
+        let isShownF = false;
+        let isShownP = false;
+
+        show_fChart = () => {
+            if (canvas_used == true) {
+                myLineChart.destroy();
+                canvas_used = false;
+            }
+            if (isShownF == false) {
+                labelsF.reverse();
+                dataSetF.reverse();
+            }
+            isShownF = true;
+            canvas_used = true;
+            let ctx =
+                document.getElementById('disp').getContext('2d');
+            myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labelsF,
+                    datasets: [
+                        {
+                            label: 'Fertilizer',
+                            data: dataSetF,
+                            borderColor: 'green',
+                            borderWidth: 2,
+                            fill: false,
+                        },
+
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    padding: 4,
+                                    size: 20,
+                                    weight: 'bold',
+                                    family: 'Arial'
+                                },
+                                color: 'black'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Quantity',
+                                font: {
+                                    size: 20,
+                                    weight: 'bold',
+                                    family: 'Arial'
+                                },
+                                color: 'black'
+                            },
+                            beginAtZero: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Values',
+                            }
+                        }
+                    }
+                }
+
+            })
+        }
+        show_pChart = () => {
+            if (canvas_used == true) {
+                myLineChart.destroy();
+                canvas_used = false;
+            }
+            if (isShownP == false) {
+                labelsP.reverse();
+                dataSetP.reverse();
+            }
+            isShownP = true;
+            canvas_used = true;
+            let ctx =
+                document.getElementById('disp').getContext('2d');
+            myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labelsP,
+                    datasets: [
+                        {
+                            label: 'Pest Control',
+                            data: dataSetP,
+                            borderColor: 'green',
+                            borderWidth: 2,
+                            fill: false,
+                        },
+
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    padding: 4,
+                                    size: 20,
+                                    weight: 'bold',
+                                    family: 'Arial'
+                                },
+                                color: 'black'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Quantity',
+                                font: {
+                                    size: 20,
+                                    weight: 'bold',
+                                    family: 'Arial'
+                                },
+                                color: 'black'
+                            },
+                            beginAtZero: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Values',
+                            }
+                        }
+                    }
+                }
+
+            })
+        }
+        // chart ends here
+
         var generated = false;
         var latestPlantationDate;
         $("#qr_tag").hide();
@@ -154,7 +308,7 @@ $crop = $_REQUEST['crop'];
             latestPlantationDate = document.getElementById("pDate").innerText;
             let qr_data = "Field Name: " + document.getElementById("name").innerText +
                 "\n-" +
-                "\nCurrent Crop: " + document.getElementById("crop").innerText +
+                "\nSelected Crop: " + document.getElementById("crop").innerText +
                 "\nCrop Status: " + document.getElementById("cropStatus").innerText +
                 "\nLatest Plantation: " + latestPlantationDate +
                 "\n-" +
@@ -166,7 +320,7 @@ $crop = $_REQUEST['crop'];
             $("#qr_tag").show();
         }
 
-        setTimeout(gen_qr, 1500);
+        setTimeout(gen_qr, 750);
 
         download = () => { //this function downlods the qr image generated
             if (generated) {
@@ -193,6 +347,10 @@ $crop = $_REQUEST['crop'];
 
     <script>
         getPlantationHistory = () => {
+            if (canvas_used == true) {
+                myLineChart.destroy();
+                canvas_used = false;
+            }
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
@@ -215,6 +373,10 @@ $crop = $_REQUEST['crop'];
         }
 
         getIrrigationHistory = () => {
+            if (canvas_used == true) {
+                myLineChart.destroy();
+                canvas_used = false;
+            }
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
@@ -236,6 +398,7 @@ $crop = $_REQUEST['crop'];
             });
         }
 
+        let fertilizerAdded = false;
         getFertilizerHistory = () => {
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
@@ -250,15 +413,25 @@ $crop = $_REQUEST['crop'];
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
                         dt = dt.split(".")[0];
+                        if (fertilizerAdded == false) {
+                            labelsF.push(dt.split(",")[0]);
+                            dataSetF.push(item.quantity);
+                        }
                         html += "<tr><td>" + dt + "</td><td>" + item.name + "</td><td>" + item.quantity + " KG</td></tr>";
                     });
                     html += "</table>";
                     $("#activityHistory").html(html);
+                    fertilizerAdded = true;
+                    setTimeout(show_fChart, 750);
                 }
             });
         }
 
         getHarvestHistory = () => {
+            if (canvas_used == true) {
+                myLineChart.destroy();
+                canvas_used = false;
+            }
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
             $.ajax({
@@ -280,6 +453,8 @@ $crop = $_REQUEST['crop'];
             });
         }
 
+
+        let pestAdded = false;
         getPestHistory = () => {
             let id = <?php echo $_REQUEST['id']; ?>;
             const base_url = "http://127.0.0.1:8000/";
@@ -294,10 +469,16 @@ $crop = $_REQUEST['crop'];
                     response.forEach((item) => {
                         let dt = item.date.replace("T", ", ");
                         dt = dt.split(".")[0];
+                        if (pestAdded == false) {
+                            labelsP.push(dt.split(",")[0]);
+                            dataSetP.push(item.quantity);
+                        }
                         html += "<tr><td>" + dt + "</td><td>" + item.name + "</td><td>" + item.quantity + " KG</td></tr>";
                     });
                     html += "</table>";
                     $("#activityHistory").html(html);
+                    pestAdded = true;
+                    setTimeout(show_pChart, 750);
                 }
             });
         }
@@ -662,6 +843,11 @@ $crop = $_REQUEST['crop'];
                 }
             });
         }
+
+
+
+
+
     </script>
     <script src="../js/tokenManager.js"></script>
 </body>
